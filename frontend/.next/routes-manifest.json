@@ -1,0 +1,323 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/activities/[id]",
+      "regex": "^/activities/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/activities/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/data-collection/entry/[id]",
+      "regex": "^/data\\-collection/entry/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/data\\-collection/entry/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/data-collection/forms/[id]",
+      "regex": "^/data\\-collection/forms/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/data\\-collection/forms/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/data-collection/submissions/[id]",
+      "regex": "^/data\\-collection/submissions/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/data\\-collection/submissions/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/documents/[kind]/[id]",
+      "regex": "^/documents/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPkind": "nxtPkind",
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/documents/(?<nxtPkind>[^/]+?)/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/indicators/[kind]/[id]",
+      "regex": "^/indicators/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPkind": "nxtPkind",
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/indicators/(?<nxtPkind>[^/]+?)/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/projects/[id]",
+      "regex": "^/projects/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/projects/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/reports/[id]",
+      "regex": "^/reports/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/reports/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/reset-password/[uid]/[token]",
+      "regex": "^/reset\\-password/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPuid": "nxtPuid",
+        "nxtPtoken": "nxtPtoken"
+      },
+      "namedRegex": "^/reset\\-password/(?<nxtPuid>[^/]+?)/(?<nxtPtoken>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/shared-portal/proposals/[id]",
+      "regex": "^/shared\\-portal/proposals/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/shared\\-portal/proposals/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/shared-portal/proposals/[id]/edit",
+      "regex": "^/shared\\-portal/proposals/([^/]+?)/edit(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/shared\\-portal/proposals/(?<nxtPid>[^/]+?)/edit(?:/)?$"
+    },
+    {
+      "page": "/strategic-plan/[id]",
+      "regex": "^/strategic\\-plan/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/strategic\\-plan/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/tasks/[id]",
+      "regex": "^/tasks/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/tasks/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/tasks/[id]/report",
+      "regex": "^/tasks/([^/]+?)/report(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/tasks/(?<nxtPid>[^/]+?)/report(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/accountability",
+      "regex": "^/accountability(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/accountability(?:/)?$"
+    },
+    {
+      "page": "/ai-reporter",
+      "regex": "^/ai\\-reporter(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/ai\\-reporter(?:/)?$"
+    },
+    {
+      "page": "/complaints",
+      "regex": "^/complaints(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/complaints(?:/)?$"
+    },
+    {
+      "page": "/countries",
+      "regex": "^/countries(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/countries(?:/)?$"
+    },
+    {
+      "page": "/dashboard",
+      "regex": "^/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard(?:/)?$"
+    },
+    {
+      "page": "/dashboard/admin/quarters",
+      "regex": "^/dashboard/admin/quarters(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/dashboard/admin/quarters(?:/)?$"
+    },
+    {
+      "page": "/data-collection",
+      "regex": "^/data\\-collection(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/data\\-collection(?:/)?$"
+    },
+    {
+      "page": "/donors",
+      "regex": "^/donors(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/donors(?:/)?$"
+    },
+    {
+      "page": "/favicon.ico",
+      "regex": "^/favicon\\.ico(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/favicon\\.ico(?:/)?$"
+    },
+    {
+      "page": "/forgot-password",
+      "regex": "^/forgot\\-password(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/forgot\\-password(?:/)?$"
+    },
+    {
+      "page": "/icon.png",
+      "regex": "^/icon\\.png(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/icon\\.png(?:/)?$"
+    },
+    {
+      "page": "/lead-partners",
+      "regex": "^/lead\\-partners(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/lead\\-partners(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/programs",
+      "regex": "^/programs(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/programs(?:/)?$"
+    },
+    {
+      "page": "/projects",
+      "regex": "^/projects(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/projects(?:/)?$"
+    },
+    {
+      "page": "/reports",
+      "regex": "^/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/reports(?:/)?$"
+    },
+    {
+      "page": "/results-framework",
+      "regex": "^/results\\-framework(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/results\\-framework(?:/)?$"
+    },
+    {
+      "page": "/shared-portal",
+      "regex": "^/shared\\-portal(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/shared\\-portal(?:/)?$"
+    },
+    {
+      "page": "/shared-portal/login",
+      "regex": "^/shared\\-portal/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/shared\\-portal/login(?:/)?$"
+    },
+    {
+      "page": "/shared-portal/proposals",
+      "regex": "^/shared\\-portal/proposals(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/shared\\-portal/proposals(?:/)?$"
+    },
+    {
+      "page": "/shared-portal/proposals/new",
+      "regex": "^/shared\\-portal/proposals/new(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/shared\\-portal/proposals/new(?:/)?$"
+    },
+    {
+      "page": "/shared-portal/search",
+      "regex": "^/shared\\-portal/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/shared\\-portal/search(?:/)?$"
+    },
+    {
+      "page": "/strategic-plan",
+      "regex": "^/strategic\\-plan(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/strategic\\-plan(?:/)?$"
+    },
+    {
+      "page": "/thematic-focus",
+      "regex": "^/thematic\\-focus(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/thematic\\-focus(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

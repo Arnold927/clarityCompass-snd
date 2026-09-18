@@ -1,0 +1,3 @@
+{
+  "/(ngo)/tasks/[id]/report/page": "app/(ngo)/tasks/[id]/report/page.js"
+}

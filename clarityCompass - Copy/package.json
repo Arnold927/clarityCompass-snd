@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@genkit-ai/googleai": "^1.24.0",
-    "xlsx": "^0.18.5"
-  }
-}
