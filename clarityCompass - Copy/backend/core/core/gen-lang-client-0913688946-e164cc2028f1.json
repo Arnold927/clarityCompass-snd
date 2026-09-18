@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "gen-lang-client-0913688946",
+  "private_key_id": "e164cc2028f13c3642fb09b6d8ae8f9654efc63e",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDbqiYtK4duXvO8\nZ08mQ4o2tO5ATCCnXcoIhHFWOSJqPobEXqHo07LSSojN5FRh+vpaZmwUQsvYO3J+\npK+ccbji1IWn/vyLIk3Yf8lO0V7CHf8+LDdZMqYuvmZyQkDmdco6RhoQM0+x/IbF\nOczsYTDLzNLZ4JHbInI25u0Xq7NPbpX4/2sSGTNv5xQSNHIuuUf+Qaha766js7gm\nswlR/nyv9ItlRoUfqtz+N/LJmW45M5ZreemyngZ0XuelBGYIQDQ7KPpHbBrV/uPZ\nI4Ow94aIE9N9wBnW2B3xTpve7GIS28EiFqMKlAKBD92QMiG6MfJlhgDmnyFb/B16\n/MQLTa3vAgMBAAECggEALWC8azdjTlsiKckDsklgi4Wb9D9lvX1kB5donGHIKL+K\n8pUECId3GPcZxMLG5cjFoBgpepQD7UL2l4/o0T4y7fTuOXK08/8dqrxXN0eMNjih\nKlRTCMOsTdq6ah8irhkmMhyaNL+M1p1ur96NZUV8oZVJ94VrTCQVCR9yWiH3tFAn\nVrZq0eq8FFr7owiEMic7qqviD+DbFPOlkIR453LKNBsLvXNpEmRZvAcR2SRHh7/2\ndmRayuxReNLXNLSuxwCBsD8WI8nZylFmSbCvz1a71HAchcK/WLkdxxfvFH02ztDu\noseo86adgfgXooT78vk8B9TJoMUk3GjOUXSETUmzFQKBgQD72ybIb9w2M5qqgAZ0\n2BvmXWL0pU8wgiCzQm5QCNqmJBzuVtGZc021bm4VuFmAJSPa6iKfGHqz9R+z2SPl\n/hAs5u3mJD6LwHFn2dI0f3CCVxosTaa+lbr8vW6cUkFktbwj7SsyI1ZnmeYsKZqu\n6Akqqb8Dan/mRCex6SRR2j+qIwKBgQDfR2dI0abQTlO69vPUnVEnKdiXB2tlma4f\n+cuyrbHQTumglUQPKOtPbwXa1QWjvxMt6FxiR8l6WsjLGwqvwNWGwJMJRF96L79f\ntSz+mkhbq7SWrFrMccR3F8zvRS+rNn9LcxFvMhJnhokpqP0JtNZddqY4ucxSWaYi\n0ltWyWLLxQKBgQDTXtervIWaT7Dsi0nf4kd4DMQyAlL1qSB8kbI3JVcrvH8zYFXE\nbUq4jBeDzxX+QC1ZWsr3rvm78mtK61//dDxrEtxyG9UKQNZsjBioypPIMAXdTMY2\niT9HQkyEkVwkg4mEtVVdXN71T+onAju5sy+OSKvw1/7DaEvQOpSqxXpM9QKBgQCm\nQsRNPBhsarb8tOGSQ+bnM8jdhZ/aUxqPIvIkxiRvSiO7+QpqA31dc/23GwMNEL5W\nY/1PDcegvbNhUmydvQkDQ6j5sJksIhvuR7oOiJIy+OQLgqJGNL0oNWfcD/fUFUuq\nwi+MTovX3R2MERMDRE6P4EccXHYiKDGHIn7zXBieRQKBgQCDw0BbnYHD6ITH0sJM\nNy7CwPc9nPwDPY1lBo5DgF4SetGpIJf1YtO7LV8fuDwoW00ex1KsZuYsMPNVaKiN\nrrVOwdOVWcbG8neUzbrqQZf/lAuQ7TvBHZtfu3WcoRrSNvi7h2Q/pshVifnmM1eL\naHCNw8oQBnOavcsI3PjD3PgQ0g==\n-----END PRIVATE KEY-----\n",
+  "client_email": "gemini-access-claritycompass-k@gen-lang-client-0913688946.iam.gserviceaccount.com",
+  "client_id": "100209952135791780715",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/gemini-access-claritycompass-k%40gen-lang-client-0913688946.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

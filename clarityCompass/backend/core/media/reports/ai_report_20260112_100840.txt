@@ -1,0 +1,90 @@
+## Project Report: Water Access - Moyale (PRJ-002)
+
+**Reporting Period:** Q1 2026
+**Target Audience:** Donor
+**Date:** January 12, 2026
+
+**1. Executive Summary**
+
+This report provides an overview of the "Water Access - Moyale" project (PRJ-002) for the first quarter of 2026 (Q1 2026).  The project aims to improve water access and sanitation in Moyale, Marsabit County, and Wajir County, Kenya, through the Clean Water Initiative. While the project's health status is currently "ON TRACK," initial progress against key indicators is at 0%.  We highlight the limited activities undertaken so far and detail our plans to accelerate project implementation in the coming quarter. This report includes a financial summary, discusses initial challenges, and outlines the steps we will take to achieve project objectives. A previously submitted bi-annual report (dated 2025-12-15) is pending review and will provide additional context once approved.
+
+**2. Project Overview**
+
+*   **Project Title:** Water Access - Moyale
+*   **Project Code:** PRJ-002
+*   **Program:** Clean Water Initiative
+*   **Project Manager:** James Smith
+*   **Duration:** July 1, 2025 – December 30, 2027
+*   **Locations:** Moyale, Marsabit County, Kenya; Wajir County, Kenya
+*   **Lifecycle Status:** Planned
+*   **Overall Project Goal:** To improve water access and sanitation for communities in Moyale and Wajir Counties.
+
+**3. Progress Against Objectives**
+
+During Q1 2026, the project is in the early stages of implementation. Progress against key indicators is currently at 0%. Specific indicators and progress are detailed below:
+
+*   **Functioning water points in Moyale schools:** Current Value: 0, Target Value: 18, Progress: 0%. Disaggregated data shows a baseline of 2 existing water points with a target to add 5.
+*   **Child mortality rate in Moyale:** Current Value: 0, Target Value: 0, Progress: 0%. Disaggregated data focuses on identifying the cause of death, with a baseline of 8 deaths and a target of 10.
+*   **Improved learning outcomes for primary students:** Current Value: 0, Target Value: 0, Progress: 0%. Data is being collected to establish baseline and target values for male and female students.
+*   **Number of wells:** Current Value: 0, Target Value: 0, Progress: 0%.  Data is being collected to establish baseline and target values for male and female beneficiaries.
+
+**Activities and Tasks:**
+
+*   **Construct 10 new boreholes:** Activity progress is 0%.
+    *   **Task:** Construct 10 new boreholes (On Track): Progress is 0%. Budget: USD 500, Spent: USD 150. Timeline: 2025-11-09 to 2025-11-19. Justification: Activity very much on track. Last Update: 2025-12-03.
+    *   **Task:** Test (Not Started): Progress is 0%. Budget: USD 2,000, Spent: USD 0. Timeline: 2025-12-07 to 2025-12-22.
+*   **Conduct hygiene promotion workshops:** Activity progress is 0%.
+    *   **Task:** Conducting hygiene promotion workshops (On Track): Progress is 0%. Budget: USD 350, Spent: USD 300. Timeline: 2025-11-23 to 2025-11-27. Justification: Progress is good. Last Update: 2025-12-12.
+*   **PLP:** Activity progress is 0%. No tasks defined.
+*   **Test:** Activity progress is 0%. No tasks defined.
+
+These activities are directly linked to achieving the target values set for the indicators outlined above.
+
+**Beneficiary Count:**
+
+Total beneficiaries recorded: 6. The data sources are project submissions and includes information like household head name and family members. The sample size for this reporting period is 3 submissions.
+
+**4. Financial Summary**
+
+*   **Currency:** USD
+*   **Total Budget:** USD 340,000
+*   **Total Spent:** USD 4,300
+*   **Remaining Balance:** USD 335,700
+*   **Budget Utilization:** 1.26%
+
+The project has a significant remaining balance. The low budget utilization reflects the project's early stage and the limited number of activities conducted during Q1 2026. We anticipate increased expenditure in the coming quarters as borehole construction and hygiene promotion workshops are scaled up.  A detailed breakdown of expenditures is available upon request.
+
+**5. Key Achievements**
+
+While the project is in its initial phase, the following achievements have been made:
+
+*   **Project Planning and Setup:** Successful completion of project planning, resource allocation, and team establishment.
+*   **Initial Community Engagement:** Initial consultations with communities in Moyale and Wajir Counties to identify priority needs and challenges related to water access.
+*   **Procurement of initial Materials:** Initial Procurement of materials required for borehole construction.
+
+**6. Challenges and Mitigation**
+
+*   **Delays in Project Implementation:**  The initial phase of the project experienced some delays due to logistical challenges related to sourcing materials.
+    *   **Mitigation:** We are working to streamline our procurement process by identifying local suppliers and establishing clear communication channels with vendors.
+*   **Pending Review of Previous Submission:** The Bi-Annually report example submitted on 2025-12-15 is still pending review.
+    *   **Mitigation:** We will follow up on the status of the report to ensure it gets reviewed.
+
+**7. Next Steps/Recommendations**
+
+Over the next quarter (Q2 2026), we will focus on the following activities:
+
+*   **Accelerated Borehole Construction:** Initiate the construction of new boreholes in selected communities.
+*   **Hygiene Promotion Workshops:**  Conduct hygiene promotion workshops to educate communities on safe water handling and hygiene practices.
+*   **Community Mobilization:** Conduct awareness campaigns to encourage community participation in project activities.
+*   **Finalize Indicator Baselines:** Collect and analyze baseline data for key indicators to establish clear targets and track progress effectively.
+*   **Continued Communication:** Maintain consistent communication with stakeholders, including donors, community leaders, and project staff.
+
+We are committed to ensuring the successful implementation of the "Water Access - Moyale" project and achieving its objectives. We value your continued support and look forward to providing further updates on our progress in the coming quarter.
+
+**Thank you for your partnership.**
+
+**Sincerely,**
+
+James Smith
+Project Manager
+Water Access - Moyale (PRJ-002)

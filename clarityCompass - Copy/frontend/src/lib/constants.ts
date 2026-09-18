@@ -1,0 +1,22 @@
+export type RoleType =
+  | "PROJECT_MANAGER"
+  | "M&E_OFFICER"
+  | "FINANCE_OFFICER"
+  | "FIELD_OFFICER"
+  | "DATA_ENTRY_CLERK"
+  | "DRIVER"
+  | "SECURITY_GUARD"
+  | "VIEWER"
+  | "INTERN";
+
+export const ROLE_OPTIONS: RoleType[] = [
+  "PROJECT_MANAGER",
+  "M&E_OFFICER",
+  "FINANCE_OFFICER",
+  "FIELD_OFFICER",
+  "DATA_ENTRY_CLERK",
+  "DRIVER",
+  "SECURITY_GUARD",
+  "VIEWER",
+  "INTERN",
+];
