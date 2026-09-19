@@ -23,7 +23,7 @@ import {
   type Country, type CountryOverview, type ProjectListItem,
 } from '@/lib/meal-api';
 import { usePageTitle } from '@/components/meal/use-page-title';
-import { ReachSummaryCards, StatusPill } from '@/components/meal/shared-cards';
+import { ReachSummaryCards, StatusPill, InfoItem } from '@/components/meal/shared-cards';
 import { useSortableData, SortableTableHead } from '@/components/meal/use-sortable-data';
 import { usePagination, PaginationControls } from '@/components/meal/use-pagination';
 import { TableFilterBar } from '@/components/meal/table-filter-bar';
@@ -40,18 +40,6 @@ function CountryFlag({ isoCode, flag, className }: { isoCode: string; flag: stri
     return <img src={flag} alt="" className={`object-cover rounded-sm ${className ?? ''}`} />;
   }
   return <span className={className}>{flagEmoji(isoCode)}</span>;
-}
-
-function InfoItem({ icon: Icon, label, value }: { icon: any; label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-2">
-      <Icon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: C.orange }} />
-      <div className="min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value ?? '—'}</p>
-      </div>
-    </div>
-  );
 }
 
 function ProjectsTable({ projects, onOpen, showFilters = true }: { projects: ProjectListItem[]; onOpen: (id: number) => void; showFilters?: boolean }) {
@@ -362,7 +350,14 @@ export default function CountriesPage() {
                     <span className="text-muted-foreground">First Implementation</span><span>{country.first_implementation_year ?? '—'}</span>
                     <span className="text-muted-foreground">Latest Activity</span><span>{overview.latest_activity_year ?? '—'}</span>
                     <span className="text-muted-foreground">Main Thematic Areas</span>
-                    <span>{overview.main_thematic_areas.length > 0 ? overview.main_thematic_areas.join(', ') : '—'}</span>
+                    <span>
+                      {overview.main_thematic_areas.length > 0 ? overview.main_thematic_areas.map((t, idx) => (
+                        <React.Fragment key={t.id}>
+                          {idx > 0 && ', '}
+                          <Link href={`/thematic-focus?area=${t.id}`} className="hover:underline" style={{ color: C.orange }}>{t.name}</Link>
+                        </React.Fragment>
+                      )) : '—'}
+                    </span>
                     <span className="text-muted-foreground">Notes</span><span>{country.notes || '—'}</span>
                   </CardContent>
                 </Card>

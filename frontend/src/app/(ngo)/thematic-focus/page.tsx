@@ -207,7 +207,7 @@ export default function ThematicFocusPage() {
                   </CardHeader>
                   <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {item.indicators.length === 0 && <p className="text-sm text-muted-foreground col-span-full">No indicators yet.</p>}
-                    {item.indicators.map(i => <IndicatorCard key={i.id} indicator={i} />)}
+                    {item.indicators.map(i => <IndicatorCard key={i.id} indicator={i} kind="thematic-focus" />)}
                   </CardContent>
                 </Card>
 

@@ -190,7 +190,10 @@ def country_overview(country):
         'donor_count': len({d.id for p in projects for d in p.donors.all()}),
         'lead_partner_count': len({p.lead_partner_id for p in projects if p.lead_partner_id}),
         'thematic_area_count': len({t.id for p in projects for t in p.thematic_focus.all()}),
-        'main_thematic_areas': sorted({t.name for p in projects for t in p.thematic_focus.all()}),
+        'main_thematic_areas': sorted(
+            {t.id: {'id': t.id, 'name': t.name} for p in projects for t in p.thematic_focus.all()}.values(),
+            key=lambda t: t['name'],
+        ),
     }
 
 

@@ -9,6 +9,7 @@ import { FileText, Trash2, Upload, Download, Eye } from 'lucide-react';
 import { C, fmtDate, type DocumentKind } from '@/lib/meal-api';
 import { usePagination, PaginationControls } from './use-pagination';
 import { TableFilterBar } from './table-filter-bar';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import Link from 'next/link';
 
 export interface DocumentLike { id: number; title: string; file: string; uploaded_at: string; }
@@ -94,7 +95,12 @@ export function DocumentManager({
           <div key={doc.id} className="flex items-center gap-3 rounded-md border p-3">
             <FileText className="h-5 w-5 shrink-0" style={{ color: C.orange }} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium truncate">{doc.title}</p>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <p className="text-sm font-medium truncate">{doc.title}</p>
+                </TooltipTrigger>
+                <TooltipContent>{doc.title}</TooltipContent>
+              </Tooltip>
               <p className="text-xs text-muted-foreground">Uploaded {fmtDate(doc.uploaded_at)}</p>
             </div>
             <Link href={`/documents/${kind}/${doc.id}`} aria-label={`View details for ${doc.title}`}>

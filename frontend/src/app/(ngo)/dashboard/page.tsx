@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
 import AppLayout from '@/components/layout/app-layout';
 import { usePageTitle } from '@/components/meal/use-page-title';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -20,20 +22,26 @@ import {
 } from '@/lib/meal-api';
 import { StatusBreakdownCard } from '@/components/meal/shared-cards';
 
-function StatCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: React.ReactNode; color: string }) {
-  return (
-    <Card>
+function StatCard({ icon: Icon, label, value, color, href }: { icon: any; label: string; value: React.ReactNode; color: string; href?: string }) {
+  const content = (
+    <Card className={href ? 'hover:shadow-md hover:border-current transition-all' : undefined}>
       <CardContent className="p-4 flex items-center gap-3">
         <div className="h-10 w-10 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}22` }}>
           <Icon className="h-5 w-5" style={{ color }} />
         </div>
         <div className="min-w-0">
           <p className="text-2xl font-bold leading-tight" style={{ color: C.brown }}>{value}</p>
-          <p className="text-xs text-muted-foreground truncate">{label}</p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="text-xs text-muted-foreground truncate">{label}</p>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
         </div>
       </CardContent>
     </Card>
   );
+  return href ? <Link href={href} className="block">{content}</Link> : content;
 }
 
 function ReachCard({ label, value, pct, color, icon: Icon }: { label: string; value: number; pct?: number; color: string; icon: any }) {
@@ -44,7 +52,12 @@ function ReachCard({ label, value, pct, color, icon: Icon }: { label: string; va
           <Icon className="h-5 w-5" style={{ color }} />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-medium mb-0.5 truncate" style={{ color }}>{label}</p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="text-xs font-medium mb-0.5 truncate" style={{ color }}>{label}</p>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
           <p className="text-2xl font-bold leading-tight" style={{ color: C.brown }}>{fmtNumber(value)}</p>
           {pct !== undefined && <p className="text-xs text-muted-foreground">{pct}%</p>}
         </div>
@@ -123,11 +136,11 @@ export default function DashboardPage() {
             {/* KPI row */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               <StatCard icon={Users} label="Total People Reached" value={fmtNumber(data.total_people_reached.total)} color={C.orange} />
-              <StatCard icon={FolderKanban} label="Active Projects" value={data.active_projects} color={C.green} />
-              <StatCard icon={Coins} label="Donors" value={data.donor_count} color={C.blue} />
-              <StatCard icon={Globe} label="Countries" value={data.country_count} color={C.pink} />
-              <StatCard icon={Users} label="Lead Partners" value={data.lead_partner_count} color={C.muted} />
-              <StatCard icon={Layers} label="Thematic Areas" value={data.thematic_area_count} color={C.red} />
+              <StatCard icon={FolderKanban} label="Active Projects" value={data.active_projects} color={C.green} href="/projects" />
+              <StatCard icon={Coins} label="Donors" value={data.donor_count} color={C.blue} href="/donors" />
+              <StatCard icon={Globe} label="Countries" value={data.country_count} color={C.pink} href="/countries" />
+              <StatCard icon={Users} label="Lead Partners" value={data.lead_partner_count} color={C.muted} href="/lead-partners" />
+              <StatCard icon={Layers} label="Thematic Areas" value={data.thematic_area_count} color={C.red} href="/thematic-focus" />
             </div>
 
             {/* Reach + Activity status */}

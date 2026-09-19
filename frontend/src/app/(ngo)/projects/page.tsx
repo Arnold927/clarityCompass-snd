@@ -12,6 +12,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Tooltip as UiTooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import {
   Table, TableHeader, TableBody, TableRow, TableHead, TableCell,
 } from '@/components/ui/table';
@@ -24,7 +25,7 @@ import {
   type Project, type ProjectListItem, type ProjectOverview,
   type Country, type Donor, type LeadPartner, type ThematicFocus,
 } from '@/lib/meal-api';
-import { ReachSummaryCards, StatusBreakdownCard, StatusPill } from '@/components/meal/shared-cards';
+import { ReachSummaryCards, StatusBreakdownCard, StatusPill, InfoItem } from '@/components/meal/shared-cards';
 import { useSortableData, SortableTableHead } from '@/components/meal/use-sortable-data';
 import { usePagination, PaginationControls } from '@/components/meal/use-pagination';
 import { TableFilterBar } from '@/components/meal/table-filter-bar';
@@ -39,6 +40,7 @@ const PROJECT_STATUS_OPTIONS = Object.entries(STATUS_LABELS)
   .map(([value, label]) => ({ value, label }));
 
 function InfoLinkList({ icon: Icon, label, items }: { icon: any; label: string; items: { id: number; name: string; href: string }[] }) {
+  const fullText = items.map(it => it.name).join(', ');
   return (
     <div className="flex items-start gap-2">
       <Icon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: C.orange }} />
@@ -47,27 +49,20 @@ function InfoLinkList({ icon: Icon, label, items }: { icon: any; label: string; 
         {items.length === 0 ? (
           <p className="text-sm font-medium">—</p>
         ) : (
-          <p className="text-sm font-medium truncate">
-            {items.map((it, idx) => (
-              <React.Fragment key={it.id}>
-                {idx > 0 && ', '}
-                <Link href={it.href} className="hover:underline" style={{ color: C.orange }}>{it.name}</Link>
-              </React.Fragment>
-            ))}
-          </p>
+          <UiTooltip>
+            <TooltipTrigger asChild>
+              <p className="text-sm font-medium truncate">
+                {items.map((it, idx) => (
+                  <React.Fragment key={it.id}>
+                    {idx > 0 && ', '}
+                    <Link href={it.href} className="hover:underline" style={{ color: C.orange }}>{it.name}</Link>
+                  </React.Fragment>
+                ))}
+              </p>
+            </TooltipTrigger>
+            <TooltipContent>{fullText}</TooltipContent>
+          </UiTooltip>
         )}
-      </div>
-    </div>
-  );
-}
-
-function InfoItem({ icon: Icon, label, value }: { icon: any; label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-2">
-      <Icon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: C.orange }} />
-      <div className="min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value || '—'}</p>
       </div>
     </div>
   );
@@ -400,8 +395,8 @@ export default function ProjectsPage() {
                             <TableHeader><TableRow><TableHead>Indicator</TableHead><TableHead>Target</TableHead><TableHead>Achievement</TableHead><TableHead>%</TableHead></TableRow></TableHeader>
                             <TableBody>
                               {overview.indicators.slice(0, 5).map(i => (
-                                <TableRow key={i.id}>
-                                  <TableCell className="font-medium">{i.name}</TableCell>
+                                <TableRow key={i.id} className="cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/indicators/project/${i.id}`)}>
+                                  <TableCell className="font-medium" style={{ color: C.orange }}>{i.name}</TableCell>
                                   <TableCell>{i.target !== null ? fmtNumber(i.target) : '—'}</TableCell>
                                   <TableCell>{fmtNumber(i.achievement)}</TableCell>
                                   <TableCell>{i.percentage_achievement !== null ? `${i.percentage_achievement}%` : '—'}</TableCell>
@@ -426,8 +421,8 @@ export default function ProjectsPage() {
                           <TableHeader><TableRow><TableHead>Activity</TableHead><TableHead>Target</TableHead><TableHead>Reach</TableHead><TableHead>Male</TableHead><TableHead>Female</TableHead><TableHead>PWD</TableHead><TableHead>Status</TableHead></TableRow></TableHeader>
                           <TableBody>
                             {project.activities.map(a => (
-                              <TableRow key={a.id}>
-                                <TableCell className="font-medium">{a.name}</TableCell>
+                              <TableRow key={a.id} className="cursor-pointer hover:bg-muted/50" onClick={() => router.push(`/activities/${a.id}`)}>
+                                <TableCell className="font-medium" style={{ color: C.orange }}>{a.name}</TableCell>
                                 <TableCell>{fmtNumber(a.target)}</TableCell>
                                 <TableCell>{fmtNumber(a.reach)}</TableCell>
                                 <TableCell>{fmtNumber(a.reach_male)}</TableCell>

@@ -132,7 +132,7 @@ export interface CountryOverview {
   latest_activity_year: number | null;
   reach_change_pct: number | null;
   project_count: number; donor_count: number; lead_partner_count: number;
-  thematic_area_count: number; main_thematic_areas: string[];
+  thematic_area_count: number; main_thematic_areas: { id: number; name: string }[];
 }
 
 export interface DashboardOverview {

@@ -23,7 +23,7 @@ import {
   type LeadPartner, type PortfolioOverview, type ProjectListItem,
 } from '@/lib/meal-api';
 import { usePageTitle } from '@/components/meal/use-page-title';
-import { ReachSummaryCards, StatusBreakdownCard, StatusPill, IndicatorCard } from '@/components/meal/shared-cards';
+import { ReachSummaryCards, StatusBreakdownCard, StatusPill, IndicatorCard, InfoItem } from '@/components/meal/shared-cards';
 import { ReachByCountryBars } from '@/components/meal/reach-charts';
 import { useSortableData, SortableTableHead } from '@/components/meal/use-sortable-data';
 import { usePagination, PaginationControls } from '@/components/meal/use-pagination';
@@ -46,18 +46,6 @@ const PARTNER_STATUS_OPTIONS = [
 const PROJECT_STATUS_OPTIONS = Object.entries(STATUS_LABELS)
   .filter(([k]) => k !== 'ACTIVE' && k !== 'INACTIVE')
   .map(([value, label]) => ({ value, label }));
-
-function InfoItem({ icon: Icon, label, value }: { icon: any; label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-2">
-      <Icon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: C.orange }} />
-      <div className="min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value ?? '—'}</p>
-      </div>
-    </div>
-  );
-}
 
 function ProjectsTable({ projects, onOpen, showFilters = true }: { projects: ProjectListItem[]; onOpen: (id: number) => void; showFilters?: boolean }) {
   const [search, setSearch] = useState('');
@@ -444,7 +432,7 @@ export default function LeadPartnersPage() {
                       </CardHeader>
                       <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {partner.indicators.length === 0 && <p className="text-sm text-muted-foreground col-span-full">No indicators yet.</p>}
-                        {partner.indicators.map(i => <IndicatorCard key={i.id} indicator={i} />)}
+                        {partner.indicators.map(i => <IndicatorCard key={i.id} indicator={i} kind="lead-partner" />)}
                       </CardContent>
                     </Card>
 

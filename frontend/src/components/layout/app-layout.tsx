@@ -9,6 +9,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { ngoAuth } from "@/lib/api";
@@ -112,15 +113,25 @@ function SidebarContent({
           {/* Name + role label — hidden when collapsed */}
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-medium truncate leading-tight" style={{ color: "#F5E6C8" }}>
-                {userName || "User"}
-              </p>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <p className="text-xs font-medium truncate leading-tight" style={{ color: "#F5E6C8" }}>
+                    {userName || "User"}
+                  </p>
+                </TooltipTrigger>
+                <TooltipContent side="right">{userName || "User"}</TooltipContent>
+              </Tooltip>
               {role && (
                 <div className="flex items-center gap-1 mt-0.5">
                   <Shield className="h-2.5 w-2.5 shrink-0" style={{ color: ROLE_BADGE_COLORS[role] }} />
-                  <span className="text-xs truncate" style={{ color: ROLE_BADGE_COLORS[role] }}>
-                    {ROLE_LABELS[role]}
-                  </span>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-xs truncate" style={{ color: ROLE_BADGE_COLORS[role] }}>
+                        {ROLE_LABELS[role]}
+                      </span>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">{ROLE_LABELS[role]}</TooltipContent>
+                  </Tooltip>
                 </div>
               )}
             </div>
