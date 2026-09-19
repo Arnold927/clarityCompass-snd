@@ -260,8 +260,8 @@ export default function CountriesPage() {
               <CardContent className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex items-start gap-4 min-w-0">
-                    <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center shrink-0 overflow-hidden">
-                      <CountryFlag isoCode={country.iso_code} flag={country.flag} className="w-full h-full text-4xl" />
+                    <div className="h-24 w-24 rounded-lg bg-muted flex items-center justify-center shrink-0 overflow-hidden">
+                      <CountryFlag isoCode={country.iso_code} flag={country.flag} className="w-full h-full text-6xl" />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">

@@ -111,13 +111,13 @@ export default function DashboardPage() {
         {/* Filters */}
         <Card>
           <CardContent className="p-4 flex flex-wrap items-end gap-3">
-            <FilterSelect label="Country" value={pendingFilters.country} onChange={v => setPendingFilters(f => ({ ...f, country: v }))}
+            <FilterSelect label="Country" pluralLabel="Countries" value={pendingFilters.country} onChange={v => setPendingFilters(f => ({ ...f, country: v }))}
               options={countries.map(c => ({ value: c.id, label: c.name }))} />
             <FilterSelect label="Donor" value={pendingFilters.donor} onChange={v => setPendingFilters(f => ({ ...f, donor: v }))}
               options={donors.map(d => ({ value: d.id, label: d.name }))} />
             <FilterSelect label="Lead Partner" value={pendingFilters.lead_partner} onChange={v => setPendingFilters(f => ({ ...f, lead_partner: v }))}
               options={partners.map(p => ({ value: p.id, label: p.name }))} />
-            <FilterSelect label="Thematic Focus" value={pendingFilters.thematic_focus} onChange={v => setPendingFilters(f => ({ ...f, thematic_focus: v }))}
+            <FilterSelect label="Thematic Focus" pluralLabel="Thematic Areas" value={pendingFilters.thematic_focus} onChange={v => setPendingFilters(f => ({ ...f, thematic_focus: v }))}
               options={thematic.map(t => ({ value: t.id, label: t.name }))} />
             <FilterSelect label="Project" value={pendingFilters.project} onChange={v => setPendingFilters(f => ({ ...f, project: v }))}
               options={projects.map(p => ({ value: p.id, label: p.name }))} />
@@ -193,10 +193,11 @@ export default function DashboardPage() {
   );
 }
 
-function FilterSelect({ label, value, onChange, options }: {
-  label: string; value?: number; onChange: (v: number | undefined) => void;
+function FilterSelect({ label, pluralLabel, value, onChange, options }: {
+  label: string; pluralLabel?: string; value?: number; onChange: (v: number | undefined) => void;
   options: { value: number; label: string }[];
 }) {
+  const allLabel = `All ${pluralLabel ?? `${label}s`}`;
   return (
     <div className="min-w-[160px]">
       <label className="text-xs text-muted-foreground mb-1 block">{label}</label>
@@ -204,9 +205,9 @@ function FilterSelect({ label, value, onChange, options }: {
         value={value?.toString() ?? 'all'}
         onValueChange={v => onChange(v === 'all' ? undefined : Number(v))}
       >
-        <SelectTrigger className="h-9"><SelectValue placeholder={`All ${label}`} /></SelectTrigger>
+        <SelectTrigger className="h-9"><SelectValue placeholder={allLabel} /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All {label}s</SelectItem>
+          <SelectItem value="all">{allLabel}</SelectItem>
           {options.map(o => (
             <SelectItem key={o.value} value={o.value.toString()}>{o.label}</SelectItem>
           ))}

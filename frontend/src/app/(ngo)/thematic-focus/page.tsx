@@ -155,8 +155,8 @@ export default function ThematicFocusPage() {
               <CardContent className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex items-start gap-4 min-w-0">
-                    <div className="h-16 w-16 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.orange}22` }}>
-                      <Layers className="h-7 w-7" style={{ color: C.orange }} />
+                    <div className="h-24 w-24 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.orange}22` }}>
+                      <Layers className="h-10 w-10" style={{ color: C.orange }} />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">

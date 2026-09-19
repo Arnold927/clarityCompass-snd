@@ -357,11 +357,11 @@ export default function DonorsPage() {
                   <CardContent className="p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="flex items-start gap-4 min-w-0">
-                        <div className="h-16 w-16 rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0">
+                        <div className="h-24 w-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0">
                           {donor.logo ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={donor.logo} alt={donor.name} className="h-full w-full object-contain" />
-                          ) : <ImageIcon className="h-6 w-6 text-muted-foreground" />}
+                          ) : <ImageIcon className="h-9 w-9 text-muted-foreground" />}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
