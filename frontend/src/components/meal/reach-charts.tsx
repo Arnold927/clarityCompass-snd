@@ -2,14 +2,14 @@
 
 import React, { useState } from 'react';
 import {
-  BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  BarChart, Bar, LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend, Sector,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { BarChart3, LineChart as LineChartIcon } from 'lucide-react';
-import { C, fmtNumber } from '@/lib/meal-api';
+import { C, fmtNumber, type YearReach } from '@/lib/meal-api';
 
-export interface YearReachPoint { year: number; reach: number; male: number; female: number; pwd: number; }
+export type YearReachPoint = YearReach;
 
 function YearTooltip({ active, payload }: any) {
   if (!active || !payload || !payload.length) return null;
@@ -83,10 +83,15 @@ export function ReachByYearChart({ data }: { data: YearReachPoint[] }) {
             <XAxis dataKey="yearLabel" tickLine={false} axisLine={false} fontSize={12} />
             <YAxis tickLine={false} axisLine={false} fontSize={12} width={48} />
             <Tooltip content={<YearTooltip />} cursor={{ fill: C.orange, opacity: 0.08 }} />
-            <Bar dataKey="reach" radius={[4, 4, 0, 0]} cursor="pointer">
-              {chartData.map(d => (
-                <Cell key={d.year} fill={d.year === selectedYear ? C.brown : C.orange} />
-              ))}
+            <Legend />
+            <Bar dataKey="male" name="Male" stackId="reach" fill={C.blue} radius={[0, 0, 0, 0]} cursor="pointer">
+              {chartData.map(d => <Cell key={d.year} fillOpacity={selectedYear === null || d.year === selectedYear ? 1 : 0.35} />)}
+            </Bar>
+            <Bar dataKey="female" name="Female" stackId="reach" fill={C.pink} radius={[0, 0, 0, 0]} cursor="pointer">
+              {chartData.map(d => <Cell key={d.year} fillOpacity={selectedYear === null || d.year === selectedYear ? 1 : 0.35} />)}
+            </Bar>
+            <Bar dataKey="pwd" name="PWD" stackId="reach" fill={C.green} radius={[4, 4, 0, 0]} cursor="pointer">
+              {chartData.map(d => <Cell key={d.year} fillOpacity={selectedYear === null || d.year === selectedYear ? 1 : 0.35} />)}
             </Bar>
           </BarChart>
         ) : (
@@ -256,5 +261,38 @@ export function ReachByCountryBars({ data }: { data: CountryReachPoint[] }) {
         {selected ? `Showing ${selected} — click again to clear.` : 'Click a bar for the full Male/Female/PWD breakdown.'}
       </p>
     </div>
+  );
+}
+
+/** A tiny inline trend line for KPI cards — no axes, no grid, just the shape
+ * of the trend. Uses the same reach-by-year data the full charts use, so
+ * it's a real trend, not decoration. Renders nothing if there's only one
+ * data point (a "trend" needs at least two to mean anything). */
+export function Sparkline({ data, color = C.orange, height = 32 }: { data: { year: number; reach: number }[]; color?: string; height?: number }) {
+  if (data.length < 2) return null;
+  const sorted = [...data].sort((a, b) => a.year - b.year);
+  return (
+    <ResponsiveContainer width="100%" height={height}>
+      <AreaChart data={sorted} margin={{ top: 2, right: 2, left: 2, bottom: 0 }}>
+        <defs>
+          <linearGradient id={`sparkline-${color.replace('#', '')}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Tooltip
+          content={({ active, payload }: any) => {
+            if (!active || !payload || !payload.length) return null;
+            const d = payload[0].payload;
+            return (
+              <div className="rounded-md border bg-white shadow px-2 py-1 text-xs">
+                <b>{d.year}</b>: {fmtNumber(d.reach)}
+              </div>
+            );
+          }}
+        />
+        <Area type="monotone" dataKey="reach" stroke={color} strokeWidth={2} fill={`url(#sparkline-${color.replace('#', '')})`} isAnimationActive={false} />
+      </AreaChart>
+    </ResponsiveContainer>
   );
 }

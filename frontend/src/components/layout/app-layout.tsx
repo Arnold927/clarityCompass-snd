@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { ngoAuth } from "@/lib/api";
 import api from "@/lib/api";
 import { type AppRole, ROLE_LABELS } from "@/lib/rbac";
+import { GlobalSearch } from "@/components/meal/global-search";
 
 // ── SND Africa MEAL Dashboard — the 5 modules + Dashboard. This is the
 // entire visible app; the legacy modules (Strategic Plan, Programs,
@@ -69,6 +70,8 @@ function SidebarContent({
 
   return (
     <>
+      <GlobalSearch collapsed={collapsed} />
+
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-3">
         <ul className="space-y-0.5">

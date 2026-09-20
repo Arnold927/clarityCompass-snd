@@ -24,7 +24,8 @@ import {
 } from '@/lib/meal-api';
 import { usePageTitle } from '@/components/meal/use-page-title';
 import { ReachSummaryCards, StatusBreakdownCard, StatusPill, IndicatorCard, InfoItem } from '@/components/meal/shared-cards';
-import { ReachByCountryBars } from '@/components/meal/reach-charts';
+import { ReachByCountryBars, ReachByYearChart } from '@/components/meal/reach-charts';
+import { NeedsAttentionCard } from '@/components/meal/attention-and-comparison';
 import { useSortableData, SortableTableHead } from '@/components/meal/use-sortable-data';
 import { usePagination, PaginationControls } from '@/components/meal/use-pagination';
 import { TableFilterBar } from '@/components/meal/table-filter-bar';
@@ -405,6 +406,7 @@ export default function DonorsPage() {
                       male={overview.total_people_reached.male} malePct={overview.total_people_reached.male_pct}
                       female={overview.total_people_reached.female} femalePct={overview.total_people_reached.female_pct}
                       pwd={overview.total_people_reached.pwd} pwdPct={overview.total_people_reached.pwd_pct}
+                      trendPct={overview.reach_change_pct}
                     />
 
                     <div className="grid lg:grid-cols-2 gap-4">
@@ -413,6 +415,14 @@ export default function DonorsPage() {
                         <CardHeader><CardTitle className="text-base">People Reached by Country</CardTitle></CardHeader>
                         <CardContent><ReachByCountryBars data={overview.reach_by_country} /></CardContent>
                       </Card>
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-4">
+                      <Card>
+                        <CardHeader><CardTitle className="text-base">Reach by Year</CardTitle></CardHeader>
+                        <CardContent><ReachByYearChart data={overview.reach_by_year} /></CardContent>
+                      </Card>
+                      <NeedsAttentionCard items={overview.needs_attention} indicatorKind="donor" />
                     </div>
 
                     <Card>

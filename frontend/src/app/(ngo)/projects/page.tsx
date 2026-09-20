@@ -26,6 +26,7 @@ import {
   type Country, type Donor, type LeadPartner, type ThematicFocus,
 } from '@/lib/meal-api';
 import { ReachSummaryCards, StatusBreakdownCard, StatusPill, InfoItem } from '@/components/meal/shared-cards';
+import { NeedsAttentionCard, TargetAchievementChart } from '@/components/meal/attention-and-comparison';
 import { useSortableData, SortableTableHead } from '@/components/meal/use-sortable-data';
 import { usePagination, PaginationControls } from '@/components/meal/use-pagination';
 import { TableFilterBar } from '@/components/meal/table-filter-bar';
@@ -409,6 +410,14 @@ export default function ProjectsPage() {
                           </Table>
                         </CardContent>
                       </Card>
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-4">
+                      <Card>
+                        <CardHeader><CardTitle className="text-base">Target vs Achievement</CardTitle></CardHeader>
+                        <CardContent><TargetAchievementChart indicators={overview.indicators} /></CardContent>
+                      </Card>
+                      <NeedsAttentionCard items={overview.needs_attention} indicatorKind="project" />
                     </div>
 
                     <Card>

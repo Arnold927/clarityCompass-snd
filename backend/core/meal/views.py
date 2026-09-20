@@ -83,7 +83,12 @@ class LeadPartnerViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def overview(self, request, pk=None):
         partner = self.get_object()
-        return Response(agg.portfolio_overview(partner.projects.all()))
+        data = agg.portfolio_overview(partner.projects.all())
+        data['needs_attention'] = sorted(
+            data['needs_attention'] + agg.needs_attention(indicators=partner.indicators.all()),
+            key=lambda f: f['percentage'],
+        )
+        return Response(data)
 
 
 class LeadPartnerIndicatorViewSet(viewsets.ModelViewSet):
@@ -121,7 +126,12 @@ class DonorViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def overview(self, request, pk=None):
         donor = self.get_object()
-        return Response(agg.portfolio_overview(donor.projects.all()))
+        data = agg.portfolio_overview(donor.projects.all())
+        data['needs_attention'] = sorted(
+            data['needs_attention'] + agg.needs_attention(indicators=donor.indicators.all()),
+            key=lambda f: f['percentage'],
+        )
+        return Response(data)
 
 
 class DonorIndicatorViewSet(viewsets.ModelViewSet):
@@ -220,3 +230,54 @@ class DashboardView(generics.GenericAPIView):
     def get(self, request):
         qs = _filter_projects_by_query_params(Project.objects.all(), request.query_params)
         return Response(agg.dashboard_overview(qs))
+
+
+class SearchView(generics.GenericAPIView):
+    """GET /api/meal/search/?q=<query> — searches by name across every module
+    and every independent indicator pool, so "global search" really means
+    global. Case-insensitive partial match, top 5 per category (a search
+    result list showing 200 rows isn't useful — this is for finding the one
+    record you're after, not browsing, which the module list pages already
+    do)."""
+    LIMIT_PER_KIND = 5
+
+    def get(self, request):
+        q = request.query_params.get('q', '').strip()
+        if not q:
+            return Response({'results': []})
+
+        results = []
+
+        for obj in Project.objects.filter(name__icontains=q)[:self.LIMIT_PER_KIND]:
+            results.append({'kind': 'project', 'id': obj.id, 'name': obj.name, 'subtitle': obj.get_status_display()})
+        for obj in Donor.objects.filter(name__icontains=q)[:self.LIMIT_PER_KIND]:
+            results.append({'kind': 'donor', 'id': obj.id, 'name': obj.name, 'subtitle': obj.get_donor_type_display()})
+        for obj in LeadPartner.objects.filter(name__icontains=q)[:self.LIMIT_PER_KIND]:
+            results.append({'kind': 'lead-partner', 'id': obj.id, 'name': obj.name, 'subtitle': obj.get_partner_type_display()})
+        for obj in Country.objects.filter(name__icontains=q)[:self.LIMIT_PER_KIND]:
+            results.append({'kind': 'country', 'id': obj.id, 'name': obj.name, 'subtitle': obj.region})
+        for obj in ThematicFocus.objects.filter(name__icontains=q)[:self.LIMIT_PER_KIND]:
+            results.append({'kind': 'thematic-focus', 'id': obj.id, 'name': obj.name, 'subtitle': 'Thematic Focus'})
+
+        for obj in ProjectIndicator.objects.filter(name__icontains=q).select_related('project')[:self.LIMIT_PER_KIND]:
+            results.append({
+                'kind': 'indicator', 'indicator_kind': 'project', 'id': obj.id, 'name': obj.name,
+                'subtitle': f'Indicator · {obj.project.name}',
+            })
+        for obj in DonorIndicator.objects.filter(name__icontains=q).select_related('donor')[:self.LIMIT_PER_KIND]:
+            results.append({
+                'kind': 'indicator', 'indicator_kind': 'donor', 'id': obj.id, 'name': obj.name,
+                'subtitle': f'Indicator · {obj.donor.name}',
+            })
+        for obj in LeadPartnerIndicator.objects.filter(name__icontains=q).select_related('lead_partner')[:self.LIMIT_PER_KIND]:
+            results.append({
+                'kind': 'indicator', 'indicator_kind': 'lead-partner', 'id': obj.id, 'name': obj.name,
+                'subtitle': f'Indicator · {obj.lead_partner.name}',
+            })
+        for obj in ThematicFocusIndicator.objects.filter(name__icontains=q).select_related('thematic_focus')[:self.LIMIT_PER_KIND]:
+            results.append({
+                'kind': 'indicator', 'indicator_kind': 'thematic-focus', 'id': obj.id, 'name': obj.name,
+                'subtitle': f'Indicator · {obj.thematic_focus.name}',
+            })
+
+        return Response({'results': results})

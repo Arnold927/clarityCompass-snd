@@ -112,23 +112,36 @@ export interface Project extends ProjectListItem {
   documents: MealDocument[];
 }
 
+export interface NeedsAttentionItem {
+  kind: 'activity' | 'indicator';
+  id: number; name: string;
+  target: number | null; value: number; percentage: number;
+  project_id?: number; // present only for activity items
+}
+
+export interface YearReach { year: number; reach: number; male: number; female: number; pwd: number; }
+
 export interface ProjectOverview {
   total_people_reached: ReachBreakdown;
   activity_status: StatusBreakdown;
   indicators: IndicatorLike[];
+  needs_attention: NeedsAttentionItem[];
 }
 
 export interface PortfolioOverview {
   total_people_reached: ReachBreakdown;
   project_status: StatusBreakdown;
   reach_by_country: { country: string; reach: number; male: number; female: number; pwd: number }[];
+  reach_by_year: YearReach[];
+  reach_change_pct: number | null;
   project_count: number; country_count: number; donor_count: number;
   lead_partner_count: number; thematic_area_count: number;
+  needs_attention: NeedsAttentionItem[];
 }
 
 export interface CountryOverview {
   total_people_reached: ReachBreakdown;
-  reach_by_year: { year: number; reach: number; male: number; female: number; pwd: number }[];
+  reach_by_year: YearReach[];
   latest_activity_year: number | null;
   reach_change_pct: number | null;
   project_count: number; donor_count: number; lead_partner_count: number;
@@ -141,12 +154,22 @@ export interface DashboardOverview {
   lead_partner_count: number; thematic_area_count: number;
   project_status: StatusBreakdown; activity_status: StatusBreakdown;
   key_achievements: { name: string; achievement: number; target: number | null; unit: string; percentage_achievement: number | null }[];
+  reach_by_year: YearReach[];
+  reach_change_pct: number | null;
+  reach_by_country: { country: string; reach: number; male: number; female: number; pwd: number }[];
+  needs_attention: NeedsAttentionItem[];
 }
 
 export interface DashboardFilters {
   country?: number; donor?: number; lead_partner?: number;
   thematic_focus?: number; project?: number;
   start_after?: string; end_before?: string;
+}
+
+export interface SearchResult {
+  kind: 'project' | 'donor' | 'lead-partner' | 'country' | 'thematic-focus' | 'indicator';
+  indicator_kind?: IndicatorKind;
+  id: number; name: string; subtitle: string;
 }
 
 export interface ProjectFilters {
@@ -196,6 +219,12 @@ export function documentParentId(kind: DocumentKind, doc: DocumentDetail): numbe
   if (kind === 'project') return doc.project;
   if (kind === 'donor') return doc.donor;
   return doc.lead_partner;
+}
+
+export function searchResultHref(r: SearchResult): string {
+  if (r.kind === 'indicator' && r.indicator_kind) return `/indicators/${r.indicator_kind}/${r.id}`;
+  if (r.kind === 'country') return `/countries?country=${r.id}`;
+  return moduleHref(r.kind as IndicatorKind, r.id);
 }
 
 // ─────────────────────────────────────────────
@@ -292,6 +321,8 @@ export const mealApi = {
     api.get<IndicatorDetail>(`/meal/${kind}-indicators/${id}/`).then(r => r.data),
   document: (kind: DocumentKind, id: number | string) =>
     api.get<DocumentDetail>(`/meal/${kind}-documents/${id}/`).then(r => r.data),
+
+  search: (q: string) => api.get<{ results: SearchResult[] }>(`/meal/search/${qs({ q })}`).then(r => r.data.results),
 };
 
 /** Resolves a parent's display name for an indicator/document detail page's "belongs to" link. */

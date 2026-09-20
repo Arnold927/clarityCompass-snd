@@ -146,6 +146,7 @@ def project_overview(project):
             }
             for i in indicators
         ],
+        'needs_attention': needs_attention(activities=activities, indicators=indicators),
     }
 
 
@@ -153,33 +154,45 @@ def portfolio_overview(projects):
     """Shared shape for Donor / Lead Partner overview dashboards. Returns the
     same counts Country's overview does, so either page can pick whichever
     counts are relevant to show (a Donor page shows lead_partner_count; a
-    Lead Partner page shows donor_count; both show country/thematic counts)."""
+    Lead Partner page shows donor_count; both show country/thematic counts).
+    Also includes reach_by_year / reach_change_pct, the same as Country,
+    so Donor/Lead Partner pages can show a genuine trend too."""
     projects = list(projects)
+    by_year = reach_by_year(projects)
+    all_activities = [a for p in projects for a in p.activities.all()]
     return {
         'total_people_reached': aggregate_projects_reach(projects),
         'project_status': aggregate_projects_status(projects),
         'reach_by_country': reach_by_country(projects),
+        'reach_by_year': by_year,
+        'reach_change_pct': year_over_year_change_pct(by_year),
         'project_count': len(projects),
         'country_count': len({c.id for p in projects for c in p.countries.all()}),
         'donor_count': len({d.id for p in projects for d in p.donors.all()}),
         'lead_partner_count': len({p.lead_partner_id for p in projects if p.lead_partner_id}),
         'thematic_area_count': len({t.id for p in projects for t in p.thematic_focus.all()}),
+        'needs_attention': needs_attention(activities=all_activities),
     }
+
+
+def year_over_year_change_pct(by_year):
+    """A genuine year-over-year % change, computed from the same reach-by-year
+    data a chart would show — not a fabricated "vs previous period" figure.
+    Shared by every overview that has year-based reach data."""
+    if len(by_year) < 2:
+        return None
+    sorted_years = sorted(by_year, key=lambda y: y['year'])
+    prev, latest = sorted_years[-2], sorted_years[-1]
+    if not prev['reach']:
+        return None
+    return round(((latest['reach'] - prev['reach']) / prev['reach']) * 100, 1)
 
 
 def country_overview(country):
     projects = list(country.projects.all())
     by_year = reach_by_year(projects)
     latest_activity_year = max((y['year'] for y in by_year), default=None)
-
-    # A genuine year-over-year change, computed from the same reach-by-year
-    # data shown in the chart — not a fabricated "vs previous period" figure.
-    reach_change_pct = None
-    if len(by_year) >= 2:
-        sorted_years = sorted(by_year, key=lambda y: y['year'])
-        prev, latest = sorted_years[-2], sorted_years[-1]
-        if prev['reach']:
-            reach_change_pct = round(((latest['reach'] - prev['reach']) / prev['reach']) * 100, 1)
+    reach_change_pct = year_over_year_change_pct(by_year)
 
     return {
         'total_people_reached': aggregate_projects_reach(projects),
@@ -217,6 +230,44 @@ def key_achievements(projects, limit=5):
     ]
 
 
+def needs_attention(activities=None, indicators=None, activity_threshold=0.5, indicator_threshold=50.0):
+    """Flags activities and indicators that are meaningfully underperforming —
+    not just "not yet started" (which is expected and not a concern), but
+    actively behind where they should be. Shared across every module's
+    overview so "needs attention" means the same thing everywhere.
+    - Activities: only ONGOING or PARTIALLY_DONE activities are considered
+      (NOT_STARTED activities with 0 reach aren't "behind", they just
+      haven't begun; COMPLETED ones are done). Flagged if reach is below
+      `activity_threshold` (default 50%) of target.
+    - Indicators: flagged if percentage_achievement is below
+      `indicator_threshold` (default 50%). Indicators with no target set
+      have no percentage_achievement and are skipped — there's nothing to
+      be "behind" on.
+    """
+    flagged = []
+    for a in (activities or []):
+        if a.status in ('ONGOING', 'PARTIALLY_DONE') and a.target > 0:
+            ratio = a.reach / a.target
+            if ratio < activity_threshold:
+                flagged.append({
+                    'kind': 'activity', 'id': a.id, 'name': a.name,
+                    'target': a.target, 'value': a.reach,
+                    'percentage': round(ratio * 100, 1),
+                    'project_id': a.project_id,
+                })
+    for i in (indicators or []):
+        pct = i.percentage_achievement
+        if pct is not None and pct < indicator_threshold:
+            flagged.append({
+                'kind': 'indicator', 'id': i.id, 'name': i.name,
+                'target': i.target, 'value': i.achievement,
+                'percentage': pct,
+            })
+    # Worst-performing first — that's the point of the list.
+    flagged.sort(key=lambda f: f['percentage'])
+    return flagged
+
+
 def dashboard_overview(projects):
     """The top-level MEAL Dashboard rollup, after any filters have been applied."""
     projects = list(projects)
@@ -227,6 +278,7 @@ def dashboard_overview(projects):
     all_activities = []
     for p in projects:
         all_activities.extend(p.activities.all())
+    by_year = reach_by_year(projects)
     return {
         'total_people_reached': aggregate_projects_reach(projects),
         'active_projects': len([p for p in projects if p.status == 'ONGOING']),
@@ -237,4 +289,11 @@ def dashboard_overview(projects):
         'project_status': aggregate_projects_status(projects),
         'activity_status': status_breakdown([a.status for a in all_activities], ACTIVITY_STATUS_LABELS),
         'key_achievements': key_achievements(projects),
+        'reach_by_year': by_year,
+        'reach_change_pct': year_over_year_change_pct(by_year),
+        'reach_by_country': reach_by_country(projects),
+        'needs_attention': needs_attention(
+            activities=all_activities,
+            indicators=[i for p in projects for i in p.indicators.all()],
+        ),
     }

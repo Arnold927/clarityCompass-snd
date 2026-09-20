@@ -17,6 +17,7 @@ import {
 import { mealApi, C, fmtDate, fmtNumber, STATUS_LABELS, type ThematicFocus } from '@/lib/meal-api';
 import { usePageTitle } from '@/components/meal/use-page-title';
 import { ReachSummaryCards, StatusPill, IndicatorCard } from '@/components/meal/shared-cards';
+import { NeedsAttentionCard, TargetAchievementChart, needsAttentionFromIndicators } from '@/components/meal/attention-and-comparison';
 import { IndicatorManager } from '@/components/meal/indicator-manager';
 import { ThematicFocusFormDialog } from '@/components/meal/thematic-focus-form-dialog';
 import { openBrandedReport } from '@/components/meal/export-report';
@@ -210,6 +211,14 @@ export default function ThematicFocusPage() {
                     {item.indicators.map(i => <IndicatorCard key={i.id} indicator={i} kind="thematic-focus" />)}
                   </CardContent>
                 </Card>
+
+                <div className="grid lg:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader><CardTitle className="text-base">Target vs Achievement</CardTitle></CardHeader>
+                    <CardContent><TargetAchievementChart indicators={item.indicators} /></CardContent>
+                  </Card>
+                  <NeedsAttentionCard items={needsAttentionFromIndicators(item.indicators)} indicatorKind="thematic-focus" />
+                </div>
 
                 <Card>
                   <CardHeader><CardTitle className="text-base">Thematic Focus Information</CardTitle></CardHeader>
