@@ -1,2 +1,4 @@
 clarityCompass-copy/
 *.zip
+backend/core/db.sqlite3
+backend/core/media/
