@@ -49,7 +49,7 @@ export function MultiSelect({
             <ChevronDown className="h-4 w-4 opacity-50 shrink-0 ml-2" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-72 max-h-64 overflow-y-auto p-2" align="start">
+        <PopoverContent className="w-72 max-h-[var(--radix-popover-content-available-height)] overflow-y-auto p-2" align="start">
           {options.length === 0 && <p className="text-sm text-muted-foreground px-2 py-1">No options available.</p>}
           {options.map(o => (
             <label key={o.value} className="flex items-center gap-2 px-2 py-1.5 rounded hover:bg-muted cursor-pointer text-sm">

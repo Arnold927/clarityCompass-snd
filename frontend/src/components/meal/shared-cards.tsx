@@ -4,9 +4,11 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
+import { Tooltip as UiTooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Users, Mars, Venus, Accessibility, ListChecks, CircleCheck, RefreshCw, Clock, CircleX, CirclePause } from 'lucide-react';
-import { C, STATUS_COLORS, STATUS_LABELS, fmtNumber, type IndicatorLike, type StatusBreakdown } from '@/lib/meal-api';
+import { C, STATUS_COLORS, STATUS_LABELS, fmtNumber, type IndicatorLike, type StatusBreakdown, type IndicatorKind } from '@/lib/meal-api';
 import { renderActiveShape } from './reach-charts';
+import Link from 'next/link';
 
 export function StatusPill({ status }: { status: string }) {
   const color = STATUS_COLORS[status] ?? C.muted;
@@ -36,7 +38,12 @@ export function ReachSummaryCards({ total, male, malePct, female, femalePct, pwd
               <it.icon className="h-5 w-5" style={{ color: it.color }} />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-medium mb-0.5 truncate" style={{ color: it.color }}>{it.label}</p>
+              <UiTooltip>
+                <TooltipTrigger asChild>
+                  <p className="text-xs font-medium mb-0.5 truncate" style={{ color: it.color }}>{it.label}</p>
+                </TooltipTrigger>
+                <TooltipContent>{it.label}</TooltipContent>
+              </UiTooltip>
               <p className="text-2xl font-bold leading-tight" style={{ color: C.brown }}>{fmtNumber(it.value)}</p>
               {it.label === totalLabel && trendPct !== undefined && trendPct !== null && (
                 <p className="text-xs font-medium" style={{ color: trendPct >= 0 ? C.green : C.red }}>
@@ -125,7 +132,12 @@ export function StatusBreakdownCard({ title, data }: { title: string; data: Stat
                   <div className="h-6 w-6 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}22` }}>
                     <Icon className="h-3.5 w-3.5" style={{ color }} />
                   </div>
-                  <span className="text-sm flex-1 truncate">{b.label}</span>
+                  <UiTooltip>
+                    <TooltipTrigger asChild>
+                      <span className="text-sm flex-1 truncate">{b.label}</span>
+                    </TooltipTrigger>
+                    <TooltipContent>{b.label}</TooltipContent>
+                  </UiTooltip>
                   <span className="text-sm font-semibold">{b.count}</span>
                   <span className="text-xs text-muted-foreground w-12 text-right">{b.percentage}%</span>
                 </div>
@@ -138,13 +150,19 @@ export function StatusBreakdownCard({ title, data }: { title: string; data: Stat
   );
 }
 
-/** Small achievement/indicator "card visual" — used by Donor / Lead Partner / Thematic Focus dashboards. */
-export function IndicatorCard({ indicator }: { indicator: IndicatorLike }) {
+/** Small achievement/indicator "card visual" — used by Donor / Lead Partner / Thematic Focus dashboards.
+ * Clickable through to that indicator's detail page. */
+export function IndicatorCard({ indicator, kind }: { indicator: IndicatorLike; kind: IndicatorKind }) {
   const pct = indicator.percentage_achievement;
   return (
-    <div className="rounded-lg border p-4">
+    <Link href={`/indicators/${kind}/${indicator.id}`} className="block rounded-lg border p-4 hover:border-[#C8793A] hover:shadow-md transition-all">
       <p className="text-2xl font-bold" style={{ color: C.brown }}>{fmtNumber(indicator.achievement)}</p>
-      <p className="text-xs text-muted-foreground mb-2">{indicator.name}</p>
+      <UiTooltip>
+        <TooltipTrigger asChild>
+          <p className="text-xs text-muted-foreground mb-2 truncate">{indicator.name}</p>
+        </TooltipTrigger>
+        <TooltipContent>{indicator.name}</TooltipContent>
+      </UiTooltip>
       {indicator.target !== null && pct !== null && (
         <>
           <div className="h-2 rounded-full bg-muted overflow-hidden">
@@ -153,6 +171,26 @@ export function IndicatorCard({ indicator }: { indicator: IndicatorLike }) {
           <p className="text-xs text-muted-foreground mt-1">{pct}% · Target: {fmtNumber(indicator.target)}</p>
         </>
       )}
+    </Link>
+  );
+}
+
+/** Icon + label + value, used for the info-strips on every module's title
+ * card. Wraps the value in a tooltip since it's truncated for long text. */
+export function InfoItem({ icon: Icon, label, value }: { icon: any; label: string; value: React.ReactNode }) {
+  const display = value || '—';
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: C.orange }} />
+      <div className="min-w-0">
+        <p className="text-xs text-muted-foreground">{label}</p>
+        <UiTooltip>
+          <TooltipTrigger asChild>
+            <p className="text-sm font-medium truncate">{display}</p>
+          </TooltipTrigger>
+          <TooltipContent>{display}</TooltipContent>
+        </UiTooltip>
+      </div>
     </div>
   );
 }

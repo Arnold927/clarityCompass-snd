@@ -5,7 +5,7 @@ from .views import (
     LeadPartnerViewSet, LeadPartnerIndicatorViewSet, LeadPartnerDocumentViewSet,
     DonorViewSet, DonorIndicatorViewSet, DonorDocumentViewSet,
     ProjectViewSet, ProjectActivityViewSet, ProjectIndicatorViewSet, ProjectDocumentViewSet,
-    DashboardView,
+    DashboardView, SearchView,
 )
 
 router = routers.DefaultRouter()
@@ -25,5 +25,6 @@ router.register(r'project-documents', ProjectDocumentViewSet, basename='meal-pro
 
 urlpatterns = [
     path('dashboard/', DashboardView.as_view(), name='meal-dashboard'),
+    path('search/', SearchView.as_view(), name='meal-search'),
     path('', include(router.urls)),
 ]

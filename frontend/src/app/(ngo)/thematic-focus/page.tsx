@@ -17,6 +17,7 @@ import {
 import { mealApi, C, fmtDate, fmtNumber, STATUS_LABELS, type ThematicFocus } from '@/lib/meal-api';
 import { usePageTitle } from '@/components/meal/use-page-title';
 import { ReachSummaryCards, StatusPill, IndicatorCard } from '@/components/meal/shared-cards';
+import { NeedsAttentionCard, TargetAchievementChart, needsAttentionFromIndicators } from '@/components/meal/attention-and-comparison';
 import { IndicatorManager } from '@/components/meal/indicator-manager';
 import { ThematicFocusFormDialog } from '@/components/meal/thematic-focus-form-dialog';
 import { openBrandedReport } from '@/components/meal/export-report';
@@ -155,8 +156,8 @@ export default function ThematicFocusPage() {
               <CardContent className="p-5">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="flex items-start gap-4 min-w-0">
-                    <div className="h-16 w-16 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.orange}22` }}>
-                      <Layers className="h-7 w-7" style={{ color: C.orange }} />
+                    <div className="h-24 w-24 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: `${C.orange}22` }}>
+                      <Layers className="h-10 w-10" style={{ color: C.orange }} />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
@@ -207,9 +208,17 @@ export default function ThematicFocusPage() {
                   </CardHeader>
                   <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {item.indicators.length === 0 && <p className="text-sm text-muted-foreground col-span-full">No indicators yet.</p>}
-                    {item.indicators.map(i => <IndicatorCard key={i.id} indicator={i} />)}
+                    {item.indicators.map(i => <IndicatorCard key={i.id} indicator={i} kind="thematic-focus" />)}
                   </CardContent>
                 </Card>
+
+                <div className="grid lg:grid-cols-2 gap-4">
+                  <Card>
+                    <CardHeader><CardTitle className="text-base">Target vs Achievement</CardTitle></CardHeader>
+                    <CardContent><TargetAchievementChart indicators={item.indicators} /></CardContent>
+                  </Card>
+                  <NeedsAttentionCard items={needsAttentionFromIndicators(item.indicators)} indicatorKind="thematic-focus" />
+                </div>
 
                 <Card>
                   <CardHeader><CardTitle className="text-base">Thematic Focus Information</CardTitle></CardHeader>

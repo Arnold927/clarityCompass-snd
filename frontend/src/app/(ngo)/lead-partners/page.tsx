@@ -23,8 +23,9 @@ import {
   type LeadPartner, type PortfolioOverview, type ProjectListItem,
 } from '@/lib/meal-api';
 import { usePageTitle } from '@/components/meal/use-page-title';
-import { ReachSummaryCards, StatusBreakdownCard, StatusPill, IndicatorCard } from '@/components/meal/shared-cards';
-import { ReachByCountryBars } from '@/components/meal/reach-charts';
+import { ReachSummaryCards, StatusBreakdownCard, StatusPill, IndicatorCard, InfoItem } from '@/components/meal/shared-cards';
+import { ReachByCountryBars, ReachByYearChart } from '@/components/meal/reach-charts';
+import { NeedsAttentionCard } from '@/components/meal/attention-and-comparison';
 import { useSortableData, SortableTableHead } from '@/components/meal/use-sortable-data';
 import { usePagination, PaginationControls } from '@/components/meal/use-pagination';
 import { TableFilterBar } from '@/components/meal/table-filter-bar';
@@ -46,18 +47,6 @@ const PARTNER_STATUS_OPTIONS = [
 const PROJECT_STATUS_OPTIONS = Object.entries(STATUS_LABELS)
   .filter(([k]) => k !== 'ACTIVE' && k !== 'INACTIVE')
   .map(([value, label]) => ({ value, label }));
-
-function InfoItem({ icon: Icon, label, value }: { icon: any; label: string; value: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-2">
-      <Icon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: C.orange }} />
-      <div className="min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="text-sm font-medium truncate">{value ?? '—'}</p>
-      </div>
-    </div>
-  );
-}
 
 function ProjectsTable({ projects, onOpen, showFilters = true }: { projects: ProjectListItem[]; onOpen: (id: number) => void; showFilters?: boolean }) {
   const [search, setSearch] = useState('');
@@ -371,11 +360,11 @@ export default function LeadPartnersPage() {
                   <CardContent className="p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div className="flex items-start gap-4 min-w-0">
-                        <div className="h-16 w-16 rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0">
+                        <div className="h-24 w-24 rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0">
                           {partner.logo ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img src={partner.logo} alt={partner.name} className="h-full w-full object-contain" />
-                          ) : <ImageIcon className="h-6 w-6 text-muted-foreground" />}
+                          ) : <ImageIcon className="h-9 w-9 text-muted-foreground" />}
                         </div>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
@@ -419,6 +408,7 @@ export default function LeadPartnersPage() {
                       male={overview.total_people_reached.male} malePct={overview.total_people_reached.male_pct}
                       female={overview.total_people_reached.female} femalePct={overview.total_people_reached.female_pct}
                       pwd={overview.total_people_reached.pwd} pwdPct={overview.total_people_reached.pwd_pct}
+                      trendPct={overview.reach_change_pct}
                     />
 
                     <div className="grid lg:grid-cols-2 gap-4">
@@ -427,6 +417,14 @@ export default function LeadPartnersPage() {
                         <CardHeader><CardTitle className="text-base">People Reached by Country</CardTitle></CardHeader>
                         <CardContent><ReachByCountryBars data={overview.reach_by_country} /></CardContent>
                       </Card>
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-4">
+                      <Card>
+                        <CardHeader><CardTitle className="text-base">Reach by Year</CardTitle></CardHeader>
+                        <CardContent><ReachByYearChart data={overview.reach_by_year} /></CardContent>
+                      </Card>
+                      <NeedsAttentionCard items={overview.needs_attention} indicatorKind="lead-partner" />
                     </div>
 
                     <Card>
@@ -444,7 +442,7 @@ export default function LeadPartnersPage() {
                       </CardHeader>
                       <CardContent className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {partner.indicators.length === 0 && <p className="text-sm text-muted-foreground col-span-full">No indicators yet.</p>}
-                        {partner.indicators.map(i => <IndicatorCard key={i.id} indicator={i} />)}
+                        {partner.indicators.map(i => <IndicatorCard key={i.id} indicator={i} kind="lead-partner" />)}
                       </CardContent>
                     </Card>
 

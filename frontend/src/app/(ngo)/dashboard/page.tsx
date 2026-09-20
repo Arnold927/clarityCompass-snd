@@ -1,17 +1,23 @@
 'use client';
 
 import React, { useEffect, useState, useCallback } from 'react';
+import Link from 'next/link';
+import { format } from 'date-fns';
+import type { DateRange } from 'react-day-picker';
 import AppLayout from '@/components/layout/app-layout';
 import { usePageTitle } from '@/components/meal/use-page-title';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import {
   Users, FolderKanban, Coins, Globe, Layers, Filter, Mars, Venus, Accessibility,
-  UserCheck, ShieldCheck, BookOpen, Droplet, Target,
+  UserCheck, ShieldCheck, BookOpen, Droplet, Target, CalendarDays, X, Download,
 } from 'lucide-react';
 import {
   mealApi, C, fmtNumber,
@@ -19,21 +25,35 @@ import {
   type Country, type Donor, type LeadPartner, type ThematicFocus, type ProjectListItem,
 } from '@/lib/meal-api';
 import { StatusBreakdownCard } from '@/components/meal/shared-cards';
+import { Sparkline, ReachByYearChart, ReachByCountryBars } from '@/components/meal/reach-charts';
+import { NeedsAttentionCard } from '@/components/meal/attention-and-comparison';
+import { openBrandedReport } from '@/components/meal/export-report';
 
-function StatCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: React.ReactNode; color: string }) {
-  return (
-    <Card>
+function StatCard({ icon: Icon, label, value, color, href, sparklineData }: { icon: any; label: string; value: React.ReactNode; color: string; href?: string; sparklineData?: { year: number; reach: number }[] }) {
+  const content = (
+    <Card className={href ? 'hover:shadow-md hover:border-current transition-all' : undefined}>
       <CardContent className="p-4 flex items-center gap-3">
         <div className="h-10 w-10 rounded-full flex items-center justify-center shrink-0" style={{ backgroundColor: `${color}22` }}>
           <Icon className="h-5 w-5" style={{ color }} />
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="text-2xl font-bold leading-tight" style={{ color: C.brown }}>{value}</p>
-          <p className="text-xs text-muted-foreground truncate">{label}</p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="text-xs text-muted-foreground truncate">{label}</p>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
         </div>
+        {sparklineData && sparklineData.length >= 2 && (
+          <div className="w-16 shrink-0">
+            <Sparkline data={sparklineData} color={color} height={36} />
+          </div>
+        )}
       </CardContent>
     </Card>
   );
+  return href ? <Link href={href} className="block">{content}</Link> : content;
 }
 
 function ReachCard({ label, value, pct, color, icon: Icon }: { label: string; value: number; pct?: number; color: string; icon: any }) {
@@ -44,7 +64,12 @@ function ReachCard({ label, value, pct, color, icon: Icon }: { label: string; va
           <Icon className="h-5 w-5" style={{ color }} />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-medium mb-0.5 truncate" style={{ color }}>{label}</p>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <p className="text-xs font-medium mb-0.5 truncate" style={{ color }}>{label}</p>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
           <p className="text-2xl font-bold leading-tight" style={{ color: C.brown }}>{fmtNumber(value)}</p>
           {pct !== undefined && <p className="text-xs text-muted-foreground">{pct}%</p>}
         </div>
@@ -68,6 +93,7 @@ export default function DashboardPage() {
 
   const [filters, setFilters] = useState<DashboardFilters>({});
   const [pendingFilters, setPendingFilters] = useState<DashboardFilters>({});
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(undefined);
 
   useEffect(() => {
     Promise.all([
@@ -85,29 +111,70 @@ export default function DashboardPage() {
 
   useEffect(() => { load(filters); }, [filters, load]);
 
-  const applyFilters = () => setFilters(pendingFilters);
+  const applyFilters = () => setFilters({
+    ...pendingFilters,
+    start_after: dateRange?.from ? format(dateRange.from, 'yyyy-MM-dd') : undefined,
+    end_before: dateRange?.to ? format(dateRange.to, 'yyyy-MM-dd') : undefined,
+  });
+
+  const exportPortfolioReport = () => {
+    if (!data) return;
+    openBrandedReport({
+      moduleLabel: 'Portfolio',
+      title: 'SND Africa — Portfolio Report',
+      subtitle: dateRange?.from
+        ? `Filtered view${dateRange.to ? ` · ${format(dateRange.from, 'MMM d, yyyy')} – ${format(dateRange.to, 'MMM d, yyyy')}` : ` · from ${format(dateRange.from, 'MMM d, yyyy')}`}`
+        : 'Full portfolio, no filters applied',
+      kpis: [
+        { label: 'Total People Reached', value: fmtNumber(data.total_people_reached.total) },
+        { label: 'Active Projects', value: data.active_projects },
+        { label: 'Donors', value: data.donor_count },
+        { label: 'Countries', value: data.country_count },
+        { label: 'Lead Partners', value: data.lead_partner_count },
+        { label: 'Thematic Areas', value: data.thematic_area_count },
+      ],
+      tables: [
+        {
+          title: 'Reach by Country',
+          columns: ['Country', 'Total Reach', 'Male', 'Female', 'PWD'],
+          rows: data.reach_by_country.map(r => [r.country, r.reach, r.male, r.female, r.pwd]),
+        },
+        {
+          title: 'Key Achievements',
+          columns: ['Indicator', 'Target', 'Achievement', 'Unit', '%'],
+          rows: data.key_achievements.map(a => [a.name, a.target ?? '—', a.achievement, a.unit, a.percentage_achievement !== null ? `${a.percentage_achievement}%` : '—']),
+        },
+      ],
+    });
+  };
 
   return (
     <AppLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold" style={{ color: C.brown }}>SND Africa — MEAL Dashboard</h1>
-          <p className="text-sm text-muted-foreground">Monitoring, Evaluation, Accountability and Learning</p>
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: C.brown }}>SND Africa — MEAL Dashboard</h1>
+            <p className="text-sm text-muted-foreground">Monitoring, Evaluation, Accountability and Learning</p>
+          </div>
+          <Button variant="outline" onClick={exportPortfolioReport} disabled={!data}>
+            <Download className="h-4 w-4 mr-2" /> Export Portfolio Report
+          </Button>
         </div>
 
         {/* Filters */}
         <Card>
           <CardContent className="p-4 flex flex-wrap items-end gap-3">
-            <FilterSelect label="Country" value={pendingFilters.country} onChange={v => setPendingFilters(f => ({ ...f, country: v }))}
+            <FilterSelect label="Country" pluralLabel="Countries" value={pendingFilters.country} onChange={v => setPendingFilters(f => ({ ...f, country: v }))}
               options={countries.map(c => ({ value: c.id, label: c.name }))} />
             <FilterSelect label="Donor" value={pendingFilters.donor} onChange={v => setPendingFilters(f => ({ ...f, donor: v }))}
               options={donors.map(d => ({ value: d.id, label: d.name }))} />
             <FilterSelect label="Lead Partner" value={pendingFilters.lead_partner} onChange={v => setPendingFilters(f => ({ ...f, lead_partner: v }))}
               options={partners.map(p => ({ value: p.id, label: p.name }))} />
-            <FilterSelect label="Thematic Focus" value={pendingFilters.thematic_focus} onChange={v => setPendingFilters(f => ({ ...f, thematic_focus: v }))}
+            <FilterSelect label="Thematic Focus" pluralLabel="Thematic Areas" value={pendingFilters.thematic_focus} onChange={v => setPendingFilters(f => ({ ...f, thematic_focus: v }))}
               options={thematic.map(t => ({ value: t.id, label: t.name }))} />
             <FilterSelect label="Project" value={pendingFilters.project} onChange={v => setPendingFilters(f => ({ ...f, project: v }))}
               options={projects.map(p => ({ value: p.id, label: p.name }))} />
+            <DateRangeFilter range={dateRange} onChange={setDateRange} />
             <Button onClick={applyFilters} style={{ backgroundColor: C.orange }} className="text-white">
               <Filter className="h-4 w-4 mr-2" /> Apply Filters
             </Button>
@@ -122,12 +189,12 @@ export default function DashboardPage() {
           <>
             {/* KPI row */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              <StatCard icon={Users} label="Total People Reached" value={fmtNumber(data.total_people_reached.total)} color={C.orange} />
-              <StatCard icon={FolderKanban} label="Active Projects" value={data.active_projects} color={C.green} />
-              <StatCard icon={Coins} label="Donors" value={data.donor_count} color={C.blue} />
-              <StatCard icon={Globe} label="Countries" value={data.country_count} color={C.pink} />
-              <StatCard icon={Users} label="Lead Partners" value={data.lead_partner_count} color={C.muted} />
-              <StatCard icon={Layers} label="Thematic Areas" value={data.thematic_area_count} color={C.red} />
+              <StatCard icon={Users} label="Total People Reached" value={fmtNumber(data.total_people_reached.total)} color={C.orange} sparklineData={data.reach_by_year} />
+              <StatCard icon={FolderKanban} label="Active Projects" value={data.active_projects} color={C.green} href="/projects" />
+              <StatCard icon={Coins} label="Donors" value={data.donor_count} color={C.blue} href="/donors" />
+              <StatCard icon={Globe} label="Countries" value={data.country_count} color={C.pink} href="/countries" />
+              <StatCard icon={Users} label="Lead Partners" value={data.lead_partner_count} color={C.muted} href="/lead-partners" />
+              <StatCard icon={Layers} label="Thematic Areas" value={data.thematic_area_count} color={C.red} href="/thematic-focus" />
             </div>
 
             {/* Reach + Activity status */}
@@ -144,6 +211,20 @@ export default function DashboardPage() {
 
               <StatusBreakdownCard title="Project Activity Status" data={data.project_status} />
             </div>
+
+            {/* Portfolio-wide reach charts */}
+            <div className="grid lg:grid-cols-2 gap-4">
+              <Card>
+                <CardHeader><CardTitle className="text-base">Reach by Year (Portfolio-wide)</CardTitle></CardHeader>
+                <CardContent><ReachByYearChart data={data.reach_by_year} /></CardContent>
+              </Card>
+              <Card>
+                <CardHeader><CardTitle className="text-base">Reach by Country (Portfolio-wide)</CardTitle></CardHeader>
+                <CardContent><ReachByCountryBars data={data.reach_by_country} /></CardContent>
+              </Card>
+            </div>
+
+            <NeedsAttentionCard items={data.needs_attention} indicatorKind="project" title="Needs Attention (across this selection)" />
 
             {/* Key achievements */}
             <Card>
@@ -180,10 +261,45 @@ export default function DashboardPage() {
   );
 }
 
-function FilterSelect({ label, value, onChange, options }: {
-  label: string; value?: number; onChange: (v: number | undefined) => void;
+function DateRangeFilter({ range, onChange }: { range: DateRange | undefined; onChange: (r: DateRange | undefined) => void }) {
+  const label = range?.from
+    ? range.to
+      ? `${format(range.from, 'MMM d, yyyy')} – ${format(range.to, 'MMM d, yyyy')}`
+      : format(range.from, 'MMM d, yyyy')
+    : 'All dates';
+  return (
+    <div className="min-w-[200px]">
+      <label className="text-xs text-muted-foreground mb-1 block">Project Date Range</label>
+      <div className="flex items-center gap-1">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" className="h-9 justify-start text-left font-normal flex-1 min-w-0">
+              <CalendarDays className="h-4 w-4 mr-2 shrink-0" style={{ color: C.orange }} />
+              <span className="truncate">{label}</span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range" selected={range} onSelect={onChange} numberOfMonths={2} initialFocus
+              captionLayout="dropdown-buttons" fromYear={2015} toYear={new Date().getFullYear() + 5}
+            />
+          </PopoverContent>
+        </Popover>
+        {range?.from && (
+          <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => onChange(undefined)} aria-label="Clear date range" title="Clear date range">
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FilterSelect({ label, pluralLabel, value, onChange, options }: {
+  label: string; pluralLabel?: string; value?: number; onChange: (v: number | undefined) => void;
   options: { value: number; label: string }[];
 }) {
+  const allLabel = `All ${pluralLabel ?? `${label}s`}`;
   return (
     <div className="min-w-[160px]">
       <label className="text-xs text-muted-foreground mb-1 block">{label}</label>
@@ -191,9 +307,9 @@ function FilterSelect({ label, value, onChange, options }: {
         value={value?.toString() ?? 'all'}
         onValueChange={v => onChange(v === 'all' ? undefined : Number(v))}
       >
-        <SelectTrigger className="h-9"><SelectValue placeholder={`All ${label}`} /></SelectTrigger>
+        <SelectTrigger className="h-9"><SelectValue placeholder={allLabel} /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All {label}s</SelectItem>
+          <SelectItem value="all">{allLabel}</SelectItem>
           {options.map(o => (
             <SelectItem key={o.value} value={o.value.toString()}>{o.label}</SelectItem>
           ))}
