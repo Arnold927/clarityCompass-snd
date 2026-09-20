@@ -1,3 +1,0 @@
-module.exports=[96339,(a,b,c)=>{"use strict";Object.defineProperty(c,"__esModule",{value:!0}),Object.defineProperty(c,"InvariantError",{enumerable:!0,get:function(){return d}});class d extends Error{constructor(a,b){super(`Invariant: ${a.endsWith(".")?a:a+"."} This is a bug in Next.js.`,b),this.name="InvariantError"}}},1604,a=>{"use strict";var b=a.i(32062);a.s([],9452),a.i(9452),a.s(["40bc820d62a5fe3ac2e500317658630d2364082556",()=>b.generateReportAction],1604)}];
-
-//# sourceMappingURL=frontend_0f96nrl._.js.map

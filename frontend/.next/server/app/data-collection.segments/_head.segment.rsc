@@ -1,6 +1,0 @@
-1:"$Sreact.fragment"
-2:I[64381,["/_next/static/chunks/0q8_37y01fqmi.js","/_next/static/chunks/0~h15wnn-~~.f.js","/_next/static/chunks/0xvpcu~stnpmj.js"],"ViewportBoundary"]
-3:I[64381,["/_next/static/chunks/0q8_37y01fqmi.js","/_next/static/chunks/0~h15wnn-~~.f.js","/_next/static/chunks/0xvpcu~stnpmj.js"],"MetadataBoundary"]
-4:"$Sreact.suspense"
-5:I[12843,["/_next/static/chunks/0q8_37y01fqmi.js","/_next/static/chunks/0~h15wnn-~~.f.js","/_next/static/chunks/0xvpcu~stnpmj.js"],"IconMark"]
-0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"SND Africa — M&E Portal"}],["$","meta","1",{"name":"description","content":"Monitoring & Evaluation Portal — Strategies for Northern Development."}],["$","link","2",{"rel":"icon","href":"/favicon.ico?favicon.01bu4sc~8p.~2.ico","sizes":"64x64","type":"image/x-icon"}],["$","link","3",{"rel":"icon","href":"/icon.png?icon.0pbsa9s586~x..png","sizes":"562x562","type":"image/png"}],["$","$L5","4",{}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"JtAidgAw00AZvyktUqkfa"}
