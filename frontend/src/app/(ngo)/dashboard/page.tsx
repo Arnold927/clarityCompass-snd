@@ -10,14 +10,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
 import {
   Users, FolderKanban, Coins, Globe, Layers, Filter, Mars, Venus, Accessibility,
-  UserCheck, ShieldCheck, BookOpen, Droplet, Target, CalendarDays, X, Download,
+  UserCheck, ShieldCheck, BookOpen, Droplet, Target, Download,
 } from 'lucide-react';
 import {
   mealApi, C, fmtNumber,
@@ -25,6 +20,7 @@ import {
   type Country, type Donor, type LeadPartner, type ThematicFocus, type ProjectListItem,
 } from '@/lib/meal-api';
 import { StatusBreakdownCard } from '@/components/meal/shared-cards';
+import { FilterSelect, DateRangeFilter } from '@/components/meal/filter-controls';
 import { Sparkline, ReachByYearChart, ReachByCountryBars } from '@/components/meal/reach-charts';
 import { NeedsAttentionCard } from '@/components/meal/attention-and-comparison';
 import { openBrandedReport } from '@/components/meal/export-report';
@@ -258,63 +254,5 @@ export default function DashboardPage() {
         )}
       </div>
     </AppLayout>
-  );
-}
-
-function DateRangeFilter({ range, onChange }: { range: DateRange | undefined; onChange: (r: DateRange | undefined) => void }) {
-  const label = range?.from
-    ? range.to
-      ? `${format(range.from, 'MMM d, yyyy')} – ${format(range.to, 'MMM d, yyyy')}`
-      : format(range.from, 'MMM d, yyyy')
-    : 'All dates';
-  return (
-    <div className="min-w-[200px]">
-      <label className="text-xs text-muted-foreground mb-1 block">Project Date Range</label>
-      <div className="flex items-center gap-1">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" className="h-9 justify-start text-left font-normal flex-1 min-w-0">
-              <CalendarDays className="h-4 w-4 mr-2 shrink-0" style={{ color: C.orange }} />
-              <span className="truncate">{label}</span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <Calendar
-              mode="range" selected={range} onSelect={onChange} numberOfMonths={2} initialFocus
-              captionLayout="dropdown-buttons" fromYear={2015} toYear={new Date().getFullYear() + 5}
-            />
-          </PopoverContent>
-        </Popover>
-        {range?.from && (
-          <Button variant="ghost" size="icon" className="h-9 w-9 shrink-0" onClick={() => onChange(undefined)} aria-label="Clear date range" title="Clear date range">
-            <X className="h-4 w-4" />
-          </Button>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function FilterSelect({ label, pluralLabel, value, onChange, options }: {
-  label: string; pluralLabel?: string; value?: number; onChange: (v: number | undefined) => void;
-  options: { value: number; label: string }[];
-}) {
-  const allLabel = `All ${pluralLabel ?? `${label}s`}`;
-  return (
-    <div className="min-w-[160px]">
-      <label className="text-xs text-muted-foreground mb-1 block">{label}</label>
-      <Select
-        value={value?.toString() ?? 'all'}
-        onValueChange={v => onChange(v === 'all' ? undefined : Number(v))}
-      >
-        <SelectTrigger className="h-9"><SelectValue placeholder={allLabel} /></SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">{allLabel}</SelectItem>
-          {options.map(o => (
-            <SelectItem key={o.value} value={o.value.toString()}>{o.label}</SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
   );
 }

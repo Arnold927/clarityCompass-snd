@@ -276,6 +276,7 @@ class Project(models.Model):
 
     image = models.ImageField(upload_to='project_images/', null=True, blank=True)
     is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -316,6 +317,7 @@ class ProjectActivity(models.Model):
     reach_pwd = models.PositiveIntegerField(default=0)
     status = models.CharField(max_length=20, choices=ACTIVITY_STATUS_CHOICES, default='NOT_STARTED')
     reporting_period = models.CharField(max_length=50, blank=True, help_text="e.g. Q2 2026")
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -331,6 +333,39 @@ class ProjectActivity(models.Model):
         if not self.target:
             return None
         return round((self.reach / self.target) * 100, 1)
+
+
+class ProjectLocation(models.Model):
+    """One of possibly several real-world points for a project (e.g. a head
+    office plus one or more field sites) — a project can span more ground
+    than a single coordinate pair can represent."""
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='locations')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    location_name = models.CharField(max_length=255, blank=True, help_text="Resolved or entered place name for the coordinates above")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['id']
+
+    def __str__(self):
+        return self.location_name or f"{self.latitude}, {self.longitude}"
+
+
+class ActivityLocation(models.Model):
+    """One of possibly several real-world points for an activity — e.g. a
+    training that ran at more than one site."""
+    activity = models.ForeignKey('ProjectActivity', on_delete=models.CASCADE, related_name='locations')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
+    location_name = models.CharField(max_length=255, blank=True, help_text="Resolved or entered place name for the coordinates above")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['id']
+
+    def __str__(self):
+        return self.location_name or f"{self.latitude}, {self.longitude}"
 
 
 class ProjectIndicator(models.Model):

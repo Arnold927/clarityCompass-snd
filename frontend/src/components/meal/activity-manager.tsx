@@ -15,35 +15,40 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { Plus, Pencil, Eye } from 'lucide-react';
-import { C, STATUS_LABELS, fmtNumber, type ProjectActivity } from '@/lib/meal-api';
+import { C, STATUS_LABELS, fmtNumber, mealApi, type ProjectActivity, type LocationEntry } from '@/lib/meal-api';
 import { StatusPill } from './shared-cards';
 import { useSortableData, SortableTableHead } from './use-sortable-data';
 import { useConfirmDiscard } from './use-confirm-discard';
 import { usePagination, PaginationControls } from './use-pagination';
 import { TableFilterBar } from './table-filter-bar';
+import { LocationListField, type LocationValue } from './location-field';
 import Link from 'next/link';
 
 export interface ActivityFormValues {
   name: string; target: number; reach: number;
   reach_male: number; reach_female: number; reach_pwd: number;
   status: string; reporting_period: string;
+  locations: LocationValue[];
 }
 
 const EMPTY: ActivityFormValues = {
   name: '', target: 0, reach: 0, reach_male: 0, reach_female: 0, reach_pwd: 0,
   status: 'NOT_STARTED', reporting_period: '',
+  locations: [],
 };
 
 export function ActivityManager({
-  activities, onCreate, onUpdate,
+  activities, onCreate, onUpdate, onSaved,
 }: {
   activities: ProjectActivity[];
-  onCreate: (values: ActivityFormValues) => Promise<void>;
-  onUpdate: (id: number, values: ActivityFormValues) => Promise<void>;
+  onCreate: (values: Omit<ActivityFormValues, 'locations'>) => Promise<ProjectActivity>;
+  onUpdate: (id: number, values: Omit<ActivityFormValues, 'locations'>) => Promise<void>;
+  onSaved: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [values, setValues] = useState<ActivityFormValues>(EMPTY);
+  const [originalLocations, setOriginalLocations] = useState<LocationEntry[]>([]);
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
   const { capture, confirmClose } = useConfirmDiscard<ActivityFormValues>();
@@ -57,15 +62,17 @@ export function ActivityManager({
   const { sortedItems, sortKey, direction, requestSort } = useSortableData<ProjectActivity>(filtered);
   const pagination = usePagination(sortedItems, 10);
 
-  const openCreate = () => { setEditingId(null); setValues(EMPTY); capture(EMPTY); setOpen(true); };
+  const openCreate = () => { setEditingId(null); setValues(EMPTY); setOriginalLocations([]); capture(EMPTY); setOpen(true); };
   const openEdit = (a: ProjectActivity) => {
     const next: ActivityFormValues = {
       name: a.name, target: a.target, reach: a.reach, reach_male: a.reach_male,
       reach_female: a.reach_female, reach_pwd: a.reach_pwd, status: a.status,
       reporting_period: a.reporting_period,
+      locations: a.locations.map(l => ({ latitude: l.latitude, longitude: l.longitude, location_name: l.location_name })),
     };
     setEditingId(a.id);
     setValues(next);
+    setOriginalLocations(a.locations);
     capture(next);
     setOpen(true);
   };
@@ -79,8 +86,25 @@ export function ActivityManager({
     if (!values.name.trim()) return;
     setSaving(true);
     try {
-      if (editingId) await onUpdate(editingId, values);
-      else await onCreate(values);
+      const { locations, ...coreValues } = values;
+      let activityId = editingId;
+      if (editingId) {
+        await onUpdate(editingId, coreValues);
+      } else {
+        const created = await onCreate(coreValues);
+        activityId = created.id;
+      }
+      // Locations aren't part of the activity's own fields — synced
+      // separately as their own records. Simplest correct approach: drop
+      // whatever was there before and recreate from the current list,
+      // rather than diffing which entries actually changed.
+      await Promise.all(originalLocations.map(l => mealApi.deleteActivityLocation(l.id)));
+      await Promise.all(locations.map(l =>
+        l.latitude !== null && l.longitude !== null
+          ? mealApi.addActivityLocation(activityId as number, { latitude: l.latitude, longitude: l.longitude, location_name: l.location_name })
+          : Promise.resolve()
+      ));
+      onSaved();
       toast({ title: editingId ? 'Activity updated' : 'Activity added', description: `"${values.name}" has been saved.` });
       setOpen(false);
     } catch (e: any) {
@@ -215,6 +239,11 @@ export function ActivityManager({
                 <Input value={values.reporting_period} onChange={e => setValues(v => ({ ...v, reporting_period: e.target.value }))} placeholder="e.g. Q2 2026" />
               </div>
             </div>
+            <LocationListField
+              label="Where this activity is taking place"
+              locations={values.locations}
+              onChange={locations => setValues(v => ({ ...v, locations }))}
+            />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => handleOpenChange(false)}>Cancel</Button>

@@ -92,10 +92,15 @@ export interface Donor {
   documents: MealDocument[];
 }
 
+export interface LocationEntry {
+  id: number; latitude: number; longitude: number; location_name: string;
+}
+
 export interface ProjectActivity {
   id: number; project: number; name: string; target: number; reach: number;
   reach_male: number; reach_female: number; reach_pwd: number;
   status: string; reporting_period: string; percentage_of_target: number | null;
+  locations: LocationEntry[];
   created_at: string; updated_at: string;
 }
 
@@ -110,6 +115,15 @@ export interface Project extends ProjectListItem {
   budget: number | null; currency: string; duration_years: number;
   image: string | null; activities: ProjectActivity[]; indicators: IndicatorLike[];
   documents: MealDocument[];
+  locations: LocationEntry[];
+}
+
+export interface MapPoint {
+  kind: 'project' | 'activity';
+  id: number; location_id: number; name: string; status: string;
+  latitude: number; longitude: number; location_name: string;
+  target: number | null; reach: number;
+  project_id: number; project_name: string;
 }
 
 export interface NeedsAttentionItem {
@@ -162,7 +176,7 @@ export interface DashboardOverview {
 
 export interface DashboardFilters {
   country?: number; donor?: number; lead_partner?: number;
-  thematic_focus?: number; project?: number;
+  thematic_focus?: number; project?: number; status?: string;
   start_after?: string; end_before?: string;
 }
 
@@ -302,6 +316,12 @@ export const mealApi = {
     api.post('/meal/project-activities/', { ...payload, project }),
   updateActivity: (id: number, payload: Partial<ProjectActivity>) =>
     api.patch(`/meal/project-activities/${id}/`, payload),
+  addProjectLocation: (project: number, loc: { latitude: number; longitude: number; location_name: string }) =>
+    api.post('/meal/project-locations/', { ...loc, project }),
+  deleteProjectLocation: (id: number) => api.delete(`/meal/project-locations/${id}/`),
+  addActivityLocation: (activity: number, loc: { latitude: number; longitude: number; location_name: string }) =>
+    api.post('/meal/activity-locations/', { ...loc, activity }),
+  deleteActivityLocation: (id: number) => api.delete(`/meal/activity-locations/${id}/`),
   addProjectIndicator: (project: number, payload: Partial<IndicatorLike>) =>
     api.post('/meal/project-indicators/', { ...payload, project }),
   updateProjectIndicator: (id: number, payload: Partial<IndicatorLike>) =>
@@ -323,6 +343,9 @@ export const mealApi = {
     api.get<DocumentDetail>(`/meal/${kind}-documents/${id}/`).then(r => r.data),
 
   search: (q: string) => api.get<{ results: SearchResult[] }>(`/meal/search/${qs({ q })}`).then(r => r.data.results),
+
+  mapPoints: (filters: DashboardFilters) =>
+    api.get<{ points: MapPoint[]; ungeotagged_activity_count: number }>(`/meal/map-points/${qs(filters)}`).then(r => r.data),
 };
 
 /** Resolves a parent's display name for an indicator/document detail page's "belongs to" link. */

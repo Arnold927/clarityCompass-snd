@@ -470,8 +470,9 @@ export default function ProjectsPage() {
                   <TabsContent value="activities" className="mt-4">
                     <ActivityManager
                       activities={project.activities}
-                      onCreate={async (values) => { await mealApi.addActivity(project.id, values); refreshCurrent(); }}
-                      onUpdate={async (id, values) => { await mealApi.updateActivity(id, values); refreshCurrent(); }}
+                      onCreate={async (values) => (await mealApi.addActivity(project.id, values)).data}
+                      onUpdate={async (id, values) => { await mealApi.updateActivity(id, values); }}
+                      onSaved={refreshCurrent}
                     />
                   </TabsContent>
 

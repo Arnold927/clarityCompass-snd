@@ -2,7 +2,7 @@
 
 import type { ReactNode } from "react";
 import {
-  GanttChartSquare, LayoutDashboard, Coins, Users, Globe, Layers,
+  GanttChartSquare, LayoutDashboard, Coins, Users, Globe, Layers, Map,
   Menu, X, ChevronLeft, ChevronRight, LogOut, Shield,
 } from "lucide-react";
 import Link from "next/link";
@@ -28,6 +28,7 @@ const ALL_MENU_ITEMS = [
   { href: "/lead-partners",   label: "Lead Partners",   icon: Users,            alwaysVisible: true },
   { href: "/countries",       label: "Countries",       icon: Globe,            alwaysVisible: true },
   { href: "/thematic-focus",  label: "Thematic Focus",  icon: Layers,           alwaysVisible: true },
+  { href: "/map",             label: "Map",             icon: Map,              alwaysVisible: true },
 ];
 
 // SND colour tokens

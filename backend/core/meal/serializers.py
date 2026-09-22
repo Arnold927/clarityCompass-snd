@@ -17,6 +17,7 @@ from .models import (
     LeadPartner, LeadPartnerIndicator, LeadPartnerDocument,
     Donor, DonorIndicator, DonorDocument,
     Project, ProjectDocument, ProjectActivity, ProjectIndicator,
+    ProjectLocation, ActivityLocation,
 )
 
 
@@ -96,13 +97,29 @@ class ProjectIndicatorSerializer(serializers.ModelSerializer):
         read_only_fields = ['project']
 
 
+class ProjectLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProjectLocation
+        fields = ['id', 'project', 'latitude', 'longitude', 'location_name', 'created_at']
+        read_only_fields = ['project']
+
+
+class ActivityLocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ActivityLocation
+        fields = ['id', 'activity', 'latitude', 'longitude', 'location_name', 'created_at']
+        read_only_fields = ['activity']
+
+
 class ProjectActivitySerializer(serializers.ModelSerializer):
     percentage_of_target = serializers.ReadOnlyField()
+    locations = ActivityLocationSerializer(many=True, read_only=True)
 
     class Meta:
         model = ProjectActivity
         fields = ['id', 'project', 'name', 'target', 'reach', 'reach_male', 'reach_female',
                   'reach_pwd', 'status', 'reporting_period', 'percentage_of_target',
+                  'locations',
                   'created_at', 'updated_at']
         read_only_fields = ['project']
 
@@ -205,6 +222,7 @@ class ProjectSerializer(serializers.ModelSerializer):
     activities = ProjectActivitySerializer(many=True, read_only=True)
     indicators = ProjectIndicatorSerializer(many=True, read_only=True)
     documents = ProjectDocumentSerializer(many=True, read_only=True)
+    locations = ProjectLocationSerializer(many=True, read_only=True)
     duration_years = serializers.ReadOnlyField()
     budget = _decimal_field(allow_null=True, required=False)
 
@@ -215,7 +233,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             'countries', 'donors', 'lead_partner', 'thematic_focus',
             'country_ids', 'donor_ids', 'lead_partner_id', 'thematic_focus_ids',
             'start_date', 'end_date', 'status', 'budget', 'currency', 'duration_years',
-            'image', 'is_active', 'activities', 'indicators', 'documents',
+            'image', 'is_active', 'locations',
+            'activities', 'indicators', 'documents',
             'created_at', 'updated_at',
         ]
 

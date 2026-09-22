@@ -13,21 +13,24 @@ import {
 } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/use-toast';
 import { MultiSelect } from './multi-select';
+import { LocationListField, type LocationValue } from './location-field';
 import { useConfirmDiscard } from './use-confirm-discard';
 import {
-  mealApi, type Project, type Country, type Donor, type LeadPartner, type ThematicFocus, C,
+  mealApi, type Project, type Country, type Donor, type LeadPartner, type ThematicFocus, type LocationEntry, C,
 } from '@/lib/meal-api';
 
 export interface ProjectFormValues {
   name: string; project_code: string; description: string;
   country_ids: number[]; donor_ids: number[]; lead_partner_id: number | null; thematic_focus_ids: number[];
   start_date: string; end_date: string; status: string; budget: string; currency: string;
+  locations: LocationValue[];
 }
 
 const EMPTY: ProjectFormValues = {
   name: '', project_code: '', description: '',
   country_ids: [], donor_ids: [], lead_partner_id: null, thematic_focus_ids: [],
   start_date: '', end_date: '', status: 'NOT_STARTED', budget: '', currency: 'USD',
+  locations: [],
 };
 
 const STATUS_OPTIONS = [
@@ -49,6 +52,7 @@ export function ProjectFormDialog({
   onSaved: () => void;
 }) {
   const [values, setValues] = useState<ProjectFormValues>(EMPTY);
+  const [originalLocations, setOriginalLocations] = useState<LocationEntry[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,8 +76,10 @@ export function ProjectFormDialog({
       status: project.status,
       budget: project.budget !== null ? String(project.budget) : '',
       currency: project.currency || 'USD',
+      locations: project.locations.map(l => ({ latitude: l.latitude, longitude: l.longitude, location_name: l.location_name })),
     } : EMPTY;
     setValues(next);
+    setOriginalLocations(project ? project.locations : []);
     capture(next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, project]);
@@ -124,7 +130,18 @@ export function ProjectFormDialog({
           lead_partner_id: values.lead_partner_id,
         };
       }
-      await mealApi.saveProject(project?.id ?? null, payload);
+      const saved = await mealApi.saveProject(project?.id ?? null, payload);
+      const projectId = saved.data.id;
+      // Locations aren't part of the project's own writable fields anymore
+      // — synced separately as their own records. Simplest correct
+      // approach: drop whatever was there before and recreate from the
+      // current list, rather than diffing which entries actually changed.
+      await Promise.all(originalLocations.map(l => mealApi.deleteProjectLocation(l.id)));
+      await Promise.all(values.locations.map(l =>
+        l.latitude !== null && l.longitude !== null
+          ? mealApi.addProjectLocation(projectId, { latitude: l.latitude, longitude: l.longitude, location_name: l.location_name })
+          : Promise.resolve()
+      ));
       toast({ title: project ? 'Project updated' : 'Project created', description: `"${values.name}" has been saved.` });
       onOpenChange(false);
       onSaved();
@@ -235,6 +252,12 @@ export function ProjectFormDialog({
               </Select>
             </div>
           </div>
+
+          <LocationListField
+            label="Project Locations"
+            locations={values.locations}
+            onChange={locations => setValues(v => ({ ...v, locations }))}
+          />
 
           <div>
             <Label>Project Image (optional)</Label>

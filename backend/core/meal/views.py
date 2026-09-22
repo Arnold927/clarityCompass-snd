@@ -7,6 +7,7 @@ from .models import (
     LeadPartner, LeadPartnerIndicator, LeadPartnerDocument,
     Donor, DonorIndicator, DonorDocument,
     Project, ProjectDocument, ProjectActivity, ProjectIndicator,
+    ProjectLocation, ActivityLocation,
 )
 from .serializers import (
     CountrySerializer, ThematicFocusSerializer, ThematicFocusIndicatorSerializer,
@@ -14,6 +15,7 @@ from .serializers import (
     DonorSerializer, DonorIndicatorSerializer, DonorDocumentSerializer,
     ProjectSerializer, ProjectListSerializer, ProjectDocumentSerializer,
     ProjectActivitySerializer, ProjectIndicatorSerializer,
+    ProjectLocationSerializer, ActivityLocationSerializer,
 )
 from . import aggregation as agg
 
@@ -196,6 +198,34 @@ class ProjectActivityViewSet(viewsets.ModelViewSet):
         serializer.save(project_id=self.request.data.get('project'))
 
 
+class ProjectLocationViewSet(viewsets.ModelViewSet):
+    serializer_class = ProjectLocationSerializer
+
+    def get_queryset(self):
+        qs = ProjectLocation.objects.all()
+        project = self.request.query_params.get('project')
+        if project:
+            qs = qs.filter(project_id=project)
+        return qs
+
+    def perform_create(self, serializer):
+        serializer.save(project_id=self.request.data.get('project'))
+
+
+class ActivityLocationViewSet(viewsets.ModelViewSet):
+    serializer_class = ActivityLocationSerializer
+
+    def get_queryset(self):
+        qs = ActivityLocation.objects.all()
+        activity = self.request.query_params.get('activity')
+        if activity:
+            qs = qs.filter(activity_id=activity)
+        return qs
+
+    def perform_create(self, serializer):
+        serializer.save(activity_id=self.request.data.get('activity'))
+
+
 class ProjectIndicatorViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectIndicatorSerializer
 
@@ -230,6 +260,57 @@ class DashboardView(generics.GenericAPIView):
     def get(self, request):
         qs = _filter_projects_by_query_params(Project.objects.all(), request.query_params)
         return Response(agg.dashboard_overview(qs))
+
+
+class MapPointsView(generics.GenericAPIView):
+    """GET /api/meal/map-points/?country=&donor=&lead_partner=&thematic_focus=&project=&start_after=&end_before=
+    Point data for the portfolio map — activities (primary: "where is this
+    actually happening") and project representative points, each of which
+    can now have more than one location (e.g. a project with a head office
+    plus field sites, or an activity that ran at more than one site) — so
+    a single project or activity can contribute several points, not just
+    one. Deliberately lightweight — a map doesn't need full nested objects,
+    just enough to draw a pin and show a popup."""
+
+    def get(self, request):
+        qs = _filter_projects_by_query_params(Project.objects.all(), request.query_params)
+        # Without this, each project triggers its own separate queries for
+        # its locations and activities, and each activity triggers another
+        # for its own locations — the number of database round-trips grows
+        # with the number of projects and activities, not just the amount
+        # of data. Prefetching batches all of that into a small, constant
+        # number of queries regardless of how many projects/activities
+        # exist.
+        qs = qs.prefetch_related('locations', 'activities__locations')
+        projects = list(qs)
+
+        points = []
+        ungeotagged_activity_count = 0
+
+        for p in projects:
+            for loc in p.locations.all():
+                points.append({
+                    'kind': 'project', 'id': p.id, 'location_id': loc.id, 'name': p.name, 'status': p.status,
+                    'latitude': float(loc.latitude), 'longitude': float(loc.longitude),
+                    'location_name': loc.location_name,
+                    'target': None, 'reach': sum(a.reach for a in p.activities.all()),
+                    'project_id': p.id, 'project_name': p.name,
+                })
+            for a in p.activities.all():
+                activity_locations = list(a.locations.all())
+                if activity_locations:
+                    for loc in activity_locations:
+                        points.append({
+                            'kind': 'activity', 'id': a.id, 'location_id': loc.id, 'name': a.name, 'status': a.status,
+                            'latitude': float(loc.latitude), 'longitude': float(loc.longitude),
+                            'location_name': loc.location_name,
+                            'target': a.target, 'reach': a.reach,
+                            'project_id': p.id, 'project_name': p.name,
+                        })
+                else:
+                    ungeotagged_activity_count += 1
+
+        return Response({'points': points, 'ungeotagged_activity_count': ungeotagged_activity_count})
 
 
 class SearchView(generics.GenericAPIView):
